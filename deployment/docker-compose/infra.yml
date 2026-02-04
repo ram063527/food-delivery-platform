@@ -1,0 +1,54 @@
+version: '3.8'
+
+name: "food-delivery-platform"
+
+services:
+  users-db:
+    image: postgres:18-alpine
+    container_name: users-db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=usersdb
+    ports:
+      - "15432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    container_name: keycloak
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin1234
+      KC_HOSTNAME: keycloak
+      KC_HOSTNAME_PORT: 9191
+      KC_HOSTNAME_STRICT: false
+    command: [ "start-dev", "--http-port=9191" ]
+    volumes:
+      - ./keycloak-data:/opt/keycloak/data
+    ports:
+      - "9191:9191"
+    healthcheck:
+      test: [ "CMD-SHELL", "exec 3<>/dev/tcp/127.0.0.1/9191" ]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 2G
+
+
