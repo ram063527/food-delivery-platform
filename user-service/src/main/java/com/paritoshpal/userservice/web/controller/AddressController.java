@@ -74,4 +74,14 @@ public class AddressController {
         return ResponseEntity.status(HttpStatus.OK).body(updatedAddress);
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteAddress(
+            @PathVariable Long id
+    ) {
+        log.info("Received request to delete address with id: {}", id);
+        addressService.deleteAddress(id);
+        log.info("Deleted address with id: {}", id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
 }

@@ -1,6 +1,7 @@
 package com.paritoshpal.userservice.domain;
 
 import com.paritoshpal.userservice.domain.exceptions.AddressNotFoundException;
+import com.paritoshpal.userservice.domain.exceptions.UserNotFoundException;
 import com.paritoshpal.userservice.domain.models.AddressResponse;
 import com.paritoshpal.userservice.domain.models.AddressUpdateRequest;
 import com.paritoshpal.userservice.domain.models.CreateAddressRequest;
@@ -74,8 +75,13 @@ public class AddressServiceImpl implements AddressService {
 
     @Override
     public List<AddressResponse> getAddressesByUserId(Long userId) {
+        if(!userRepository.existsById(userId)){
+            throw  UserNotFoundException.forId(userId);
+        }
         List<AddressEntity> addressEntities = addressRepository.findByUserId(userId);
         log.info("Found {} addresses for user with id: {}", addressEntities.size(), userId);
         return addressEntities.stream().map(addressMapper::toResponse).toList();
     }
+
+
 }
