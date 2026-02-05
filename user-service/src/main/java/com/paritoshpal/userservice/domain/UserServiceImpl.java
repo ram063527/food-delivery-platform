@@ -5,6 +5,7 @@ import com.paritoshpal.userservice.domain.exceptions.UserNotFoundException;
 import com.paritoshpal.userservice.domain.models.CreateUserRequest;
 import com.paritoshpal.userservice.domain.models.UpdateUserRequest;
 import com.paritoshpal.userservice.domain.models.UserResponse;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class UserServiceImpl implements UserService{
 
     private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
@@ -58,6 +60,9 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public UserResponse updateUser(Long userId, UpdateUserRequest request) {
+        // For now passing the userId in the request Itself, But after authentication
+        // logged in user will be fetched from the security context and that will be used for update instead of passing userId in the request
+
         // 1. Find Existing User
         UserEntity userEntity = userRepository.findById(userId)
                 .orElseThrow(() -> UserNotFoundException.forId(userId));

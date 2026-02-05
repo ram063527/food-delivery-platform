@@ -1,8 +1,6 @@
 package com.paritoshpal.userservice.domain;
 
-import com.paritoshpal.userservice.domain.models.UserResponse;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

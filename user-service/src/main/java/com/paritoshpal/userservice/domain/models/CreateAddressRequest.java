@@ -1,10 +1,10 @@
 package com.paritoshpal.userservice.domain.models;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 
 public record CreateAddressRequest(
 
+        Long userId,
         @NotBlank(message = "Street address cannot be empty")
         String streetAddress,
         @NotBlank(message = "City cannot be empty")

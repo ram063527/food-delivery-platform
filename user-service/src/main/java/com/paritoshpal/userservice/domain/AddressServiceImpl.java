@@ -18,18 +18,19 @@ public class AddressServiceImpl implements AddressService {
     private static final Logger log = LoggerFactory.getLogger(AddressServiceImpl.class);
     private final AddressRepository addressRepository;
     private final AddressMapper addressMapper;
+    private final UserRepository userRepository;
 
     @Override
     public AddressResponse createAddress(CreateAddressRequest request) {
         // 1. Convert to Entity
         AddressEntity addressEntity = addressMapper.toEntity(request);
         // Get CurrentLogged in User :
-        UserEntity currentUser = UserContextHolder.getCurrentUser();
-        // Link to UserEntity
-        addressEntity.setUser();
+        UserEntity userEntity = userRepository.findById(request.userId())
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + request.userId()));
+        addressEntity.setUser(userEntity);
         // 2. Save Entity
         AddressEntity savedAddress = addressRepository.save(addressEntity);
-        log.info("Created address with id: {}", savedAddress.getId());
+        log.info("Created address with id: {} for user id: {}", savedAddress.getId(), request.userId());
         // 3. Convert to Response
         return addressMapper.toResponse(savedAddress);
     }
