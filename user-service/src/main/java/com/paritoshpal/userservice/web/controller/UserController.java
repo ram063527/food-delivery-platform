@@ -5,6 +5,7 @@ import com.paritoshpal.userservice.domain.UserService;
 import com.paritoshpal.userservice.domain.models.CreateUserRequest;
 import com.paritoshpal.userservice.domain.models.UpdateUserRequest;
 import com.paritoshpal.userservice.domain.models.UserResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,7 +60,7 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<UserResponse> createUser(
-            @RequestBody CreateUserRequest request
+            @RequestBody @Valid CreateUserRequest request
     ) {
         log.info("Received request to create user with email: {}", request.email());
         UserResponse createdUser = userService.createUser(request);
@@ -70,7 +71,7 @@ public class UserController {
     @PutMapping("/{userId}")
     public ResponseEntity<UserResponse> updateUser(
             @PathVariable Long userId,
-            @RequestBody UpdateUserRequest request
+            @RequestBody @Valid UpdateUserRequest request
             ) {
 
         log.info("Received request to update user");

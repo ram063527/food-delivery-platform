@@ -4,12 +4,15 @@ import com.paritoshpal.userservice.domain.AddressService;
 import com.paritoshpal.userservice.domain.models.AddressResponse;
 import com.paritoshpal.userservice.domain.models.AddressUpdateRequest;
 import com.paritoshpal.userservice.domain.models.CreateAddressRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/address")
@@ -31,12 +34,12 @@ public class AddressController {
     }
 
     @GetMapping("/email/{email}")
-    public ResponseEntity<AddressResponse> getAddressByUserEmail(@PathVariable String email) {
+    public ResponseEntity<List<AddressResponse>> getAddressByUserEmail(@PathVariable String email) {
         log.info("Received request to get address for user with email: {}", email);
-        AddressResponse address = addressService.getAddressesByUserEmail(email).stream().findFirst()
-                .orElseThrow(() -> new RuntimeException("No address found for user with email: " + email));
+        List<AddressResponse> addressResponse = addressService.getAddressesByUserEmail(email
+        );
         log.info("Returning address for user with email: {}", email);
-        return ResponseEntity.status(HttpStatus.OK).body(address);
+        return ResponseEntity.status(HttpStatus.OK).body(addressResponse);
     }
 
     @GetMapping("/userId/{userId}")
@@ -51,7 +54,7 @@ public class AddressController {
 
     @PostMapping
     public ResponseEntity<AddressResponse> createAddress(
-            @RequestBody CreateAddressRequest request
+            @RequestBody @Valid CreateAddressRequest request
     ){
         log.info("Received request to create address for user");
         // for now passing userid in the request itself
@@ -63,7 +66,7 @@ public class AddressController {
     @PutMapping("/{id}")
     public ResponseEntity<AddressResponse> updateAddress(
             @PathVariable Long id,
-            @RequestBody AddressUpdateRequest request
+            @RequestBody @Valid AddressUpdateRequest request
     ){
         log.info("Received request to update address with id: {}", id);
         AddressResponse updatedAddress = addressService.updateAddress(id, request);
