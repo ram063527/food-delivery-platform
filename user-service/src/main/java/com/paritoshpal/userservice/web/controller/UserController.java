@@ -57,7 +57,6 @@ public class UserController {
 
     }
 
-
     @PostMapping
     public ResponseEntity<UserResponse> createUser(
             @RequestBody @Valid CreateUserRequest request

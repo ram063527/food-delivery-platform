@@ -3,14 +3,19 @@ package com.paritoshpal.userservice.web.exception;
 import com.paritoshpal.userservice.domain.exceptions.AddressNotFoundException;
 import com.paritoshpal.userservice.domain.exceptions.EmailAlreadyInUseException;
 import com.paritoshpal.userservice.domain.exceptions.UserNotFoundException;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ProblemDetail;
+import jakarta.annotation.Nullable;
+import org.apache.coyote.Response;
+import org.springframework.http.*;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.net.URI;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
@@ -67,5 +72,28 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         problemDetail.setProperty("timestamp", Instant.now());
         return problemDetail;
     }
+
+    @Override
+    @Nullable
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(
+            MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request
+    ) {
+        List<String> errors = new ArrayList<>();
+        ex.getBindingResult().getAllErrors().forEach((error) -> {
+            String errorMessage = error.getDefaultMessage();
+            errors.add(errorMessage);
+        });
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Invalid request payload");
+        problemDetail.setTitle("Bad Request");
+        problemDetail.setType(BAD_REQUEST_TYPE);
+        problemDetail.setProperty("errors", errors);
+        problemDetail.setProperty("service", SERVICE_NAME);
+        problemDetail.setProperty("error_category", "Generic");
+        problemDetail.setProperty("timestamp", Instant.now());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetail);
+    }
+
+
+
 
 }
