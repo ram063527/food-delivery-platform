@@ -12,6 +12,7 @@
 
     <modules>
         <module>user-service</module>
+        <module>restaurant-service</module>
     </modules>
 
     <properties>
