@@ -10,33 +10,44 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-@Table(name = "menus")
-public class MenuEntity {
-
+@Table(name = "menu_items")
+public class MenuItemEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "menu_seq")
-    @SequenceGenerator(name = "menu_seq", sequenceName = "menu_id_seq")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "menu_item_seq")
+    @SequenceGenerator(name = "menu_item_seq", sequenceName = "menu_item_id_seq")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "restaurant_id", nullable = false)
-    private RestaurantEntity restaurant;
+    @JoinColumn(name = "menu_id", nullable = false)
+    private MenuEntity menu;
 
     @Column(nullable = false)
     private String name;
 
     private String description;
 
-    @OneToMany(mappedBy = "menu", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<MenuItemEntity> menuItems = new HashSet<>();
+    @Column(nullable = false)
+    private BigDecimal price;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private MenuCategory category;
+
+    @Column(nullable = false)
+    private boolean availability;
+
+    @Column(name = "image_url")
+    private String imageUrl;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private DietaryInfo dietaryInfo;
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
@@ -45,7 +56,4 @@ public class MenuEntity {
     @UpdateTimestamp
     @Column(nullable = false)
     private LocalDateTime updatedAt;
-
-
-
 }

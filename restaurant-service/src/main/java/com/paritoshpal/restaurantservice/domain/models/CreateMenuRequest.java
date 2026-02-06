@@ -1,4 +1,9 @@
 package com.paritoshpal.restaurantservice.domain.models;
 
-public record CreateMenuRequest() {
+import jakarta.validation.constraints.NotBlank;
+
+public record CreateMenuRequest(
+        @NotBlank String name,
+        String description
+) {
 }
