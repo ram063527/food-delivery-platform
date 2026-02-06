@@ -43,10 +43,9 @@ public class AddressController {
     }
 
     @GetMapping("/userId/{userId}")
-    public ResponseEntity<AddressResponse> getAddressByUserId(@PathVariable  Long userId) {
+    public ResponseEntity<List<AddressResponse>> getAddressByUserId(@PathVariable  Long userId) {
         log.info("Received request to get address for user with id: {}", userId);
-        AddressResponse address = addressService.getAddressesByUserId(userId).stream().findFirst()
-                .orElseThrow(() -> new RuntimeException("No address found for user with id: " + userId));
+        List<AddressResponse> address = addressService.getAddressesByUserId(userId);
         log.info("Returning address for user with id: {}", userId);
         return ResponseEntity.status(HttpStatus.OK).body(address);
     }

@@ -4,7 +4,6 @@ import com.paritoshpal.userservice.domain.exceptions.AddressNotFoundException;
 import com.paritoshpal.userservice.domain.exceptions.EmailAlreadyInUseException;
 import com.paritoshpal.userservice.domain.exceptions.UserNotFoundException;
 import jakarta.annotation.Nullable;
-import org.apache.coyote.Response;
 import org.springframework.http.*;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;

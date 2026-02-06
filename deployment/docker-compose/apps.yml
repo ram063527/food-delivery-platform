@@ -1,0 +1,23 @@
+version: '3.8'
+
+name: 'food-delivery-platform'
+
+services:
+    user-service:
+        image: ram063527/fooddelivery-user-service
+        container_name: user-service
+        environment:
+          - DB_URL=jdbc:postgresql://users-db:5432/usersdb
+          - DB_USERNAME=postgres
+          - DB_PASSWORD=postgres
+        ports:
+          - "8081:8081"
+        restart: unless-stopped
+        depends_on:
+          users-db:
+            condition: service_healthy
+        deploy:
+          resources:
+            limits:
+              memory: 700m
+

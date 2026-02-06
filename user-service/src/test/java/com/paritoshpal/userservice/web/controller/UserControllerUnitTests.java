@@ -1,7 +1,6 @@
 package com.paritoshpal.userservice.web.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.paritoshpal.userservice.AbstractIT;
 import com.paritoshpal.userservice.config.SecurityConfig;
 import com.paritoshpal.userservice.domain.UserService;
 import com.paritoshpal.userservice.domain.models.CreateUserRequest;

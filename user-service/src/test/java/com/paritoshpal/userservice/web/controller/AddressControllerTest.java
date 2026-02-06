@@ -208,17 +208,18 @@ class AddressControllerTest extends AbstractIT {
         void shouldGetAddressByUserIdSuccessfully() {
             Long userId = 1L;
 
-            given()
+             given()
                     .when()
                     .get("/api/address/userId/{userId}", userId)
                     .then()
                     .statusCode(200)
-                    .body("id", notNullValue())
-                    .body("streetAddress", is("123 Elm Street"))
-                    .body("city", is("New York"))
-                    .body("state", is("NY"))
-                    .body("postalCode", is("10001"))
-                    .body("country", is("USA"));
+                     .body("[0].id", notNullValue())
+                     .body("[0].streetAddress", is("123 Elm Street"))
+                     .body("[0].city", is("New York"))
+                     .body("[0].state", is("NY"))
+                     .body("[0].postalCode", is("10001"))
+                     .body("[0].country", is("USA"));
+
         }
 
         @Test

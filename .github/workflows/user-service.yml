@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       working-directory: ./user-service
-      DOCKER_IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/foodDelivery-user-service
+      DOCKER_IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/fooddelivery-user-service
     defaults:
       run:
         working-directory: ${{ env.working-directory }}
@@ -45,6 +45,6 @@ jobs:
 #        run: |
 #          ./mvnw spring-boot:build-image -DskipTests
 #          echo "Pushing the image $DOCKER_IMAGE_NAME to Docker Hub..."
-#          docker push ${{ secrets.DOCKERHUB_USERNAME }}/foodDelivery-user-service
+#          docker push ${{ secrets.DOCKERHUB_USERNAME }}/fooddelivery-user-service
 #
 

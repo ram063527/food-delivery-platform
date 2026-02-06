@@ -11,7 +11,6 @@ import org.springframework.test.context.jdbc.Sql;
 import java.util.List;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -224,7 +223,7 @@ class UserControllerTest extends AbstractIT {
                     .as(new TypeRef<>() {
                     });
 
-            assertEquals(5, users.size());
+            assertEquals(6, users.size());
         }
 
         @Test
@@ -287,7 +286,7 @@ class UserControllerTest extends AbstractIT {
                     .as(new TypeRef<>() {
                     });
 
-            assertEquals(2, users.size());
+            assertEquals(3, users.size());
         }
 
          @Test

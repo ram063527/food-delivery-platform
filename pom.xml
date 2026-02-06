@@ -11,8 +11,7 @@
     <name>food-delivery-platform</name>
 
     <modules>
-
-
+        <module>user-service</module>
     </modules>
 
     <properties>
