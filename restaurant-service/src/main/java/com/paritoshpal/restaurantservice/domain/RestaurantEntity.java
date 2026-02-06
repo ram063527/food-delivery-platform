@@ -38,12 +38,10 @@ public class RestaurantEntity {
     @Column(nullable = false, unique = true)
     private String email;
 
-
     @Column(name = "owner_id", nullable = false)
     private Long ownerId;
 
     private String cuisine;
-
 
     private BigDecimal rating;
 
