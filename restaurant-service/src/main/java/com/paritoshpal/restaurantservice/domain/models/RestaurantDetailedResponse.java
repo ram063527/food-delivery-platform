@@ -1,26 +1,26 @@
 package com.paritoshpal.restaurantservice.domain.models;
 
-
 import com.paritoshpal.restaurantservice.domain.Status;
-import jakarta.validation.constraints.PositiveOrZero;
 
 import java.math.BigDecimal;
 import java.time.LocalTime;
+import java.util.List;
 
-public record RestaurantUpdateRequest(
+public record RestaurantDetailedResponse(
+        Long id,
         String name,
         String description,
         String phone,
+        String email,
         String cuisine,
+        BigDecimal rating,
         Status status,
+        List<MenuResponse> menus,
+        RestaurantAddressResponse address,
         LocalTime openingTime,
         LocalTime closingTime,
-        @PositiveOrZero
         BigDecimal deliveryFee,
-        @PositiveOrZero
         BigDecimal minimumOrderAmount,
-        @PositiveOrZero
-        Integer estimatedDeliveryTimeMinutes
+        Integer estimatedDeliveryTimeInMinutes
 ) {
-
 }
