@@ -52,7 +52,7 @@ public class RestaurantEntity {
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<MenuEntity> menus = new HashSet<>();
 
-    @OneToOne(mappedBy = "restaurantEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
     private RestaurantAddressEntity address;
 
     @Column(name = "opening_time")
