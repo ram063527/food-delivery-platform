@@ -12,7 +12,8 @@ VALUES
     ('jane.smith@example.com', 'hashed_password_456', 'Jane', 'Smith', '0987654321', 'RESTAURANT_OWNER', 'ACTIVE'),
     ('bob.jones@example.com', 'hashed_password_789', 'Bob', 'Jones', '1122334455', 'DELIVERY_DRIVER', 'INACTIVE'),
     ('admin@example.com', 'hashed_password_101', 'Admin', 'User', '2233445566', 'ADMIN', 'ACTIVE'),
-    ('alice.white@example.com', 'hashed_password_102', 'Alice', 'White', '6677889900', 'CUSTOMER', 'SUSPENDED');
+    ('alice.white@example.com', 'hashed_password_102', 'Alice', 'White', '6677889900', 'CUSTOMER', 'SUSPENDED'),
+    ('ram.white@example.com', 'hashed_password_102', 'Ram', 'Lakhan', '6677889900', 'CUSTOMER', 'SUSPENDED');
 
 
 

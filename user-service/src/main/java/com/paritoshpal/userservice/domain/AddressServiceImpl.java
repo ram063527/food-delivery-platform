@@ -68,6 +68,9 @@ public class AddressServiceImpl implements AddressService {
 
     @Override
     public List<AddressResponse> getAddressesByUserEmail(String email) {
+        if(!userRepository.existsByEmail(email)){
+            throw  UserNotFoundException.forEmail(email);
+        }
         List<AddressEntity> addressEntities = addressRepository.findByUserEmail(email);
         log.info("Found {} addresses for user with email: {}", addressEntities.size(), email);
         return addressEntities.stream().map(addressMapper::toResponse).toList();
