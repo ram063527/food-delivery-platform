@@ -1,9 +1,16 @@
 package com.paritoshpal.restaurantservice.domain.models;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 public record CreateMenuRequest(
-        @NotBlank String name,
+
+        @NotNull(message = "Restaurant ID cannot be null")
+        Long restaurantId,
+
+        @NotBlank(message = "Menu name cannot be empty")
+        String name,
+
         String description
 ) {
 }
