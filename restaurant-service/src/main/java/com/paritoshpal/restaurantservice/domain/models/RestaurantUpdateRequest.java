@@ -20,7 +20,7 @@ public record RestaurantUpdateRequest(
         @PositiveOrZero
         BigDecimal minimumOrderAmount,
         @PositiveOrZero
-        Integer estimatedDeliveryTimeMinutes
+        Integer estimatedDeliveryTime
 ) {
 
 }

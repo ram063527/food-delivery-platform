@@ -24,6 +24,7 @@ public record CreateRestaurantRequest(
         String cuisine,
         @NotNull(message = "Restaurant status cannot be null")
         Status status,
+        BigDecimal rating,
         LocalTime openingTime,
         LocalTime closingTime,
         @PositiveOrZero(message = "Delivery fee cannot be negative")
@@ -32,6 +33,6 @@ public record CreateRestaurantRequest(
         @PositiveOrZero(message = "Minimum order cannot be negative")
         @NotNull(message = "Minimum order amount cannot be null")
         BigDecimal minimumOrderAmount,
-        Integer estimatedDeliveryTimeMinutes
+        Integer estimatedDeliveryTime
 ) {
 }

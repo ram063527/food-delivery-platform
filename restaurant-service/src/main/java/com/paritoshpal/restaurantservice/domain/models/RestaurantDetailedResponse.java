@@ -21,6 +21,6 @@ public record RestaurantDetailedResponse(
         LocalTime closingTime,
         BigDecimal deliveryFee,
         BigDecimal minimumOrderAmount,
-        Integer estimatedDeliveryTimeInMinutes
+        Integer estimatedDeliveryTime
 ) {
 }

@@ -50,10 +50,10 @@ public class RestaurantEntity {
     private Status status;
 
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<MenuEntity> menuEntities = new HashSet<>();
+    private Set<MenuEntity> menus = new HashSet<>();
 
     @OneToOne(mappedBy = "restaurantEntity", cascade = CascadeType.ALL, orphanRemoval = true)
-    private RestaurantAddressEntity restaurantAddressEntity;
+    private RestaurantAddressEntity address;
 
     @Column(name = "opening_time")
     private LocalTime openingTime;
