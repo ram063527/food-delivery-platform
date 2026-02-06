@@ -83,6 +83,23 @@ class UserControllerTest extends AbstractIT {
 
         }
 
+        void shouldReturnConflictWhenEmailAlreadyExists() {
+
+            var payload = """
+                    {
+                      "email": "john.doe@example.com",
+                      "firstName": "Hello",
+                      "lastName": "Bro",
+                      "phone": "555-9876",
+                      "password": "newuserpassword123",
+                      "role": "CUSTOMER"
+                    }
+                   
+                    
+                    """;
+
+        }
+
 
     }
 
