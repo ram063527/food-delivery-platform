@@ -4,7 +4,7 @@ name: 'food-delivery-platform'
 
 services:
     user-service:
-        image: paritosh4495/fooddelivery-user-service
+        image: ram063527/fooddelivery-user-service
         container_name: user-service
         environment:
           - DB_URL=jdbc:postgresql://users-db:5432/usersdb

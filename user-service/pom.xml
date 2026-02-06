@@ -28,7 +28,7 @@
     </scm>
     <properties>
         <java.version>21</java.version>
-        <dockerImageName>paritosh4495/fooddelivery-${project.artifactId}</dockerImageName>
+        <dockerImageName>ram063527/fooddelivery-${project.artifactId}</dockerImageName>
         <org.mapstruct.version>1.6.3</org.mapstruct.version>
     </properties>
     <dependencies>
