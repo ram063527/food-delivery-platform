@@ -26,7 +26,7 @@ public class RestaurantAddressEntity {
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "restaurant_id", nullable = false)
-    private RestaurantEntity restaurantEntity;
+    private RestaurantEntity restaurant;
 
     @Column(name = "street_address", nullable = false)
     private String streetAddress;
