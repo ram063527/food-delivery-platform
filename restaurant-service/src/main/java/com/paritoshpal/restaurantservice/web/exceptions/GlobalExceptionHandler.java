@@ -92,6 +92,18 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return problemDetail;
     }
 
+    @ExceptionHandler(RestaurantAddressAlreadyExistsException.class)
+    ProblemDetail handleRestaurantAddressAlreadyExistsException(RestaurantAddressAlreadyExistsException e) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, e.getMessage());
+        problemDetail.setTitle("Restaurant Address Already Exists");
+        problemDetail.setType(CONFLICT_TYPE);
+        problemDetail.setProperty("service", SERVICE_NAME);
+        problemDetail.setProperty("error_category", "Validation");
+        problemDetail.setProperty("timestamp", Instant.now());
+        problemDetail.setProperty("message", e.getMessage());
+        return problemDetail;
+    }
+
 
     @Override
     @Nullable
