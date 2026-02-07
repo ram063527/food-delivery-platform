@@ -195,6 +195,44 @@ class RestaurantControllerTest extends AbstractIT {
                     .statusCode(404);
         }
 
+        @Test
+        void shouldDeleteRestaurantAddressWhenRestaurantIsDeleted() {
+            // First, delete the restaurant
+            RestAssured.given()
+                    .when()
+                    .delete("/api/restaurants/1")
+                    .then()
+                    .statusCode(204);
+
+            // Then, try to get the address for the deleted restaurant
+            RestAssured.given()
+                    .when()
+                    .get("/api/restaurants-addresses/restaurant/1")
+                    .then()
+                    .statusCode(404);
+        }
+
+        @Test
+        void shouldDeleteRestaurantMenuWhenRestaurantIsDeleted() {
+            // First, delete the restaurant
+            RestAssured.given()
+                    .when()
+                    .delete("/api/restaurants/1")
+                    .then()
+                    .statusCode(204);
+
+            // Then, try to get the menu for the deleted restaurant
+            RestAssured.given()
+                    .when()
+                    .get("/api/restaurants/1/menu")
+                    .then()
+                    .statusCode(404);
+        }
+
+
+
+
+
     }
 
     @Nested
@@ -231,7 +269,7 @@ class RestaurantControllerTest extends AbstractIT {
                     .statusCode(200)
                     .body("content", not(empty()))
                     .body("pageNumber", is(1))
-                    .body("totalElements", is(5))
+                    .body("totalElements", is(6))
                     .body("totalPages", is(1));
         }
 
@@ -318,10 +356,13 @@ class RestaurantControllerTest extends AbstractIT {
                     .then()
                     .statusCode(200)
                     .body("$", not(empty()))
-                    .body("data", hasSize(5));
+                    .body("data", hasSize(6));
         }
 
     }
+
+
+
 
 
 }
