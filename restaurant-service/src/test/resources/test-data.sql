@@ -16,7 +16,9 @@ VALUES
     ('Green Bowl', 'Healthy vegan meals', '9999990002', 'greenbowl@mail.com', 2, 'VEGAN', 4.7, 'ACTIVE', '09:00', '22:00', 20, 150, 30, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
     ('Pasta Palace', 'Italian pastas and pizzas', '9999990003', 'pastapalace@mail.com', 3, 'ITALIAN', 4.3, 'ACTIVE', '11:00', '23:30', 25, 250, 45, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
     ('Burger Barn', 'Juicy burgers and fries', '9999990004', 'burgerbarn@mail.com', 4, 'AMERICAN', 4.1, 'ACTIVE', '10:30', '22:30', 15, 120, 25, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-    ('Sweet Treats', 'Desserts and beverages', '9999990005', 'sweettreats@mail.com', 5, 'DESSERTS', 4.6, 'ACTIVE', '08:00', '21:00', 10, 100, 20, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+    ('Sweet Treats', 'Desserts and beverages', '9999990005', 'sweettreats@mail.com', 5, 'DESSERTS', 4.6, 'ACTIVE', '08:00', '21:00', 10, 100, 20, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('Green Thing', 'A pure Vegetarian', '9999990005', 'greenthing@mail.com', 5, 'SOUTH-INDIAN', 4.6, 'ACTIVE', '08:00', '21:00', 10, 100, 20, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
 
 INSERT INTO restaurant_addresses(
     restaurant_id, street_address, city, state, postal_code, country, latitude, longitude, created_at, updated_at
