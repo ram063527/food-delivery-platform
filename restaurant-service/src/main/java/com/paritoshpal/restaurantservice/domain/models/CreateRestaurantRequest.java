@@ -30,9 +30,11 @@ public record CreateRestaurantRequest(
         @PositiveOrZero(message = "Delivery fee cannot be negative")
         @NotNull(message = "Delivery fee cannot be null")
         BigDecimal deliveryFee,
-        @PositiveOrZero(message = "Minimum order cannot be negative")
+        @PositiveOrZero(message = "Minimum order amount cannot be negative")
         @NotNull(message = "Minimum order amount cannot be null")
         BigDecimal minimumOrderAmount,
+        @PositiveOrZero(message = "Estimated delivery time cannot be negative")
+        @NotNull(message = "Estimated delivery time cannot be null")
         Integer estimatedDeliveryTime
 ) {
 }
