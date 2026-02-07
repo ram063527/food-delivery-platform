@@ -59,7 +59,7 @@ public class MenuItemServiceImpl implements  MenuItemService {
     @Override
     public void deleteMenuItem(Long menuItemId) {
         if(!menuItemRepository.existsById(menuItemId)){
-            throw MenuNotFoundException.forId(menuItemId);
+            throw MenuItemNotFoundException.forId(menuItemId);
         }
         menuItemRepository.deleteById(menuItemId);
     }
@@ -80,7 +80,7 @@ public class MenuItemServiceImpl implements  MenuItemService {
     @Override
     public void updateAvailability(Long menuItemId, boolean available) {
         MenuItemEntity menuItem = menuItemRepository.findById(menuItemId)
-                .orElseThrow(() -> MenuNotFoundException.forId(menuItemId));
+                .orElseThrow(() -> MenuItemNotFoundException.forId(menuItemId));
         menuItem.setAvailability(available);
         menuItemRepository.save(menuItem);
     }

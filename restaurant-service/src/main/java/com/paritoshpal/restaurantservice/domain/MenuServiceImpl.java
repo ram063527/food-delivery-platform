@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 @Service
@@ -95,7 +96,7 @@ public class MenuServiceImpl implements MenuService{
         MenuEntity menu = menuRepository.findById(menuId)
                 .orElseThrow(()-> MenuNotFoundException.forId(menuId));
 
-        BigDecimal multiplier  = BigDecimal.ONE.add(percentageIncrease.divide(BigDecimal.valueOf(100)));
+        BigDecimal multiplier  = BigDecimal.ONE.add(percentageIncrease.divide(BigDecimal.valueOf(100),2, RoundingMode.HALF_UP));
 
         menu.getMenuItems().forEach(item -> {
             BigDecimal currentPrice = item.getPrice();
