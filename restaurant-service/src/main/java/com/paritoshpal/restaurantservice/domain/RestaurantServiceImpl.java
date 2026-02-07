@@ -1,6 +1,7 @@
 package com.paritoshpal.restaurantservice.domain;
 
 import com.paritoshpal.restaurantservice.ApplicationProperties;
+import com.paritoshpal.restaurantservice.domain.exceptions.EmailAlreadyInUseException;
 import com.paritoshpal.restaurantservice.domain.exceptions.RestaurantNotFoundException;
 import com.paritoshpal.restaurantservice.domain.mapper.RestaurantMapper;
 import com.paritoshpal.restaurantservice.domain.models.*;
@@ -29,6 +30,11 @@ public class RestaurantServiceImpl implements RestaurantService {
     public RestaurantResponse createRestaurant(CreateRestaurantRequest request) {
         // 1. Convert CreateRestaurantRequest to Restaurant entity
         RestaurantEntity restaurantEntity = restaurantMapper.toRestaurantEntity(request);
+        // Check if the restaurant with same email already exists
+        restaurantRepository.findByEmail(restaurantEntity.getEmail())
+                .ifPresent(r -> {
+                    throw  EmailAlreadyInUseException.forEmail(request.email());
+                });
         // 2. Save the Restaurant entity to the database
         RestaurantEntity savedRestaurant = restaurantRepository.save(restaurantEntity);
         // 3. Convert the saved Restaurant entity to RestaurantResponse and return
