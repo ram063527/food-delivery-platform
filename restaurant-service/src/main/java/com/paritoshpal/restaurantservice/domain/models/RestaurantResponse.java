@@ -3,7 +3,7 @@ package com.paritoshpal.restaurantservice.domain.models;
 import com.paritoshpal.restaurantservice.domain.Status;
 
 import java.math.BigDecimal;
-import java.util.List;
+
 
 public record RestaurantResponse(
         Long id,
@@ -12,7 +12,6 @@ public record RestaurantResponse(
         String cuisine,
         BigDecimal rating,
         Status status,
-        List<MenuResponse> menus,
         RestaurantAddressResponse address
 ) {
 }
