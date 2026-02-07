@@ -15,7 +15,7 @@ public record RestaurantDetailedResponse(
         String cuisine,
         BigDecimal rating,
         Status status,
-        List<MenuResponse> menus,
+        List<MenuSummaryResponse> menus,
         RestaurantAddressResponse address,
         LocalTime openingTime,
         LocalTime closingTime,

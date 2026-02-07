@@ -3,6 +3,7 @@ package com.paritoshpal.restaurantservice.domain.mapper;
 import com.paritoshpal.restaurantservice.domain.MenuEntity;
 import com.paritoshpal.restaurantservice.domain.models.CreateMenuRequest;
 import com.paritoshpal.restaurantservice.domain.models.MenuResponse;
+import com.paritoshpal.restaurantservice.domain.models.MenuSummaryResponse;
 import com.paritoshpal.restaurantservice.domain.models.MenuUpdateRequest;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -16,6 +17,7 @@ public interface MenuMapper {
 
     MenuResponse toMenuResponse(MenuEntity menu);
 
+    MenuSummaryResponse toMenuSummaryResponse(MenuEntity menu);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "restaurant", ignore = true) // Handle in service layer
