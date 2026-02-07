@@ -1,5 +1,6 @@
 package com.paritoshpal.restaurantservice.domain;
 
+import com.paritoshpal.restaurantservice.domain.exceptions.RestaurantAddressAlreadyExistsException;
 import com.paritoshpal.restaurantservice.domain.exceptions.RestaurantAddressNotFoundException;
 import com.paritoshpal.restaurantservice.domain.exceptions.RestaurantNotFoundException;
 import com.paritoshpal.restaurantservice.domain.mapper.RestaurantAddressMapper;
@@ -29,7 +30,7 @@ public class RestaurantAddressServiceImpl implements  RestaurantAddressService
 
         restaurantAddressRepository.findByRestaurantId(restaurantEntity.getId())
                 .ifPresent(a -> {
-                    throw new IllegalArgumentException("Restaurant with ID " + restaurantEntity.getId() + " already has an address.");
+                    throw RestaurantAddressAlreadyExistsException.forRestaurantId(request.restaurantId());
                 });
 
         // 2. Map the request to an entity
