@@ -56,6 +56,39 @@ class RestaurantControllerTest extends AbstractIT {
         }
 
         @Test
+        void shouldReturnConflictForDuplicateEmail() {
+            // Given
+            var payload = """
+                    {
+                     "name": "Geordie Grill House",
+                      "description": "Casual grill restaurant in Newcastle city centre specialising in steaks and burgers.",
+                      "phone": "+44 191 555 5678",
+                      "email": "spicehub@mail.com",
+                      "ownerId": 2,
+                      "cuisine": "Grill",
+                      "status": "ACTIVE",
+                    
+                      "openingTime": "12:00:00",
+                      "closingTime": "22:30:00",
+                      "deliveryFee": 1.99,
+                      "minimumOrderAmount": 12.00,
+                      "estimatedDeliveryTime": 30
+                    }
+                    
+                    """;
+
+            RestAssured.given()
+                    .contentType(ContentType.JSON)
+                    .body(payload)
+                    .when()
+                    .post("/api/restaurants")
+                    .then()
+                    .statusCode(409);
+
+        }
+
+
+        @Test
         void shouldReturnBadRequestForInvalidPayload() {
             // Given
             var invalidPayload = """
@@ -262,6 +295,30 @@ class RestaurantControllerTest extends AbstractIT {
                     .body("data.name", everyItem(is("Spice Hub")))
                     .body("data.cuisine", everyItem(is("INDIAN")))
                     .body("data.address.city", everyItem(is("Bangalore")));
+        }
+
+
+        @Test
+        void ShouldReturnEmptyResultForSearchWithNoMatches() {
+            RestAssured.given()
+                    .queryParam("name", "NonExistingRestaurant")
+                    .when()
+                    .get("/api/restaurants/search")
+                    .then()
+                    .statusCode(200)
+                    .body("$", not(empty()))
+                    .body("data", empty());
+        }
+
+        @Test
+        void shouldReturnEverythingForSearchWithNoFilters() {
+            RestAssured.given()
+                    .when()
+                    .get("/api/restaurants/search")
+                    .then()
+                    .statusCode(200)
+                    .body("$", not(empty()))
+                    .body("data", hasSize(5));
         }
 
     }
