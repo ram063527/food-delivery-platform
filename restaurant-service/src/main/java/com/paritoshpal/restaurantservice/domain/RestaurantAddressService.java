@@ -3,7 +3,6 @@ package com.paritoshpal.restaurantservice.domain;
 import com.paritoshpal.restaurantservice.domain.models.CreateRestaurantAddressRequest;
 import com.paritoshpal.restaurantservice.domain.models.RestaurantAddressResponse;
 import com.paritoshpal.restaurantservice.domain.models.RestaurantAddressUpdateRequest;
-import com.paritoshpal.restaurantservice.domain.models.RestaurantUpdateRequest;
 
 public interface RestaurantAddressService {
 

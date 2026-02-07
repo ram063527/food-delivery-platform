@@ -2,7 +2,6 @@ package com.paritoshpal.restaurantservice.domain;
 
 import com.paritoshpal.restaurantservice.domain.models.*;
 
-import java.awt.print.Pageable;
 import java.util.List;
 
 public interface RestaurantService {
