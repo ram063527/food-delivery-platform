@@ -62,17 +62,39 @@ public class RestaurantAddressServiceImpl implements  RestaurantAddressService
 
     @Override
     public void deleteRestaurantAddress(Long restaurantAddressId) {
-       if(!restaurantAddressRepository.existsById(restaurantAddressId)) {
-           throw new RestaurantAddressNotFoundException("Restaurant address not found with ID: " + restaurantAddressId);
-       }
-         restaurantAddressRepository.deleteById(restaurantAddressId);
+        // 1. Find the address
+        RestaurantAddressEntity address = restaurantAddressRepository.findById(restaurantAddressId)
+                .orElseThrow(() -> new RestaurantAddressNotFoundException("Restaurant address not found with ID: " + restaurantAddressId));
+
+        // 2. Get the associated restaurant
+        RestaurantEntity restaurant = address.getRestaurant();
+
+        // 3. Break the relationship from the parent side
+        if (restaurant != null) {
+            restaurant.setAddress(null);
+            // orphanRemoval = true on RestaurantEntity will now automatically
+            // delete the address record from the database when the restaurant is saved.
+            restaurantRepository.save(restaurant);
+        } else {
+            // Fallback for an orphaned address
+            restaurantAddressRepository.delete(address);
+        }
     }
 
     @Override
     public void deleteRestaurantAddressByRestaurantId(Long restaurantId) {
         RestaurantAddressEntity address = restaurantAddressRepository.findByRestaurantId(restaurantId)
                 .orElseThrow(() -> RestaurantAddressNotFoundException.forRestaurantId(restaurantId));
-        restaurantAddressRepository.delete(address);
+
+        RestaurantEntity restaurant = address.getRestaurant();
+        if(restaurant!=null){
+            restaurant.setAddress(null);
+            restaurantRepository.save(restaurant);
+        }else {
+            restaurantAddressRepository.delete(address);
+        }
+
+
     }
 
     @Override
