@@ -24,7 +24,7 @@ public class RestaurantAddressEntity {
     @SequenceGenerator(name = "restaurant_address_seq", sequenceName = "restaurant_address_id_seq")
     private Long id;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne
     @JoinColumn(name = "restaurant_id", nullable = false)
     private RestaurantEntity restaurant;
 
