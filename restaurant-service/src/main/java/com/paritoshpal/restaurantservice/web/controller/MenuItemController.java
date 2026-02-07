@@ -1,5 +1,7 @@
-package com.paritoshpal.restaurantservice.domain;
+package com.paritoshpal.restaurantservice.web.controller;
 
+import com.paritoshpal.restaurantservice.domain.MenuCategory;
+import com.paritoshpal.restaurantservice.domain.MenuItemService;
 import com.paritoshpal.restaurantservice.domain.models.CreateMenuItemRequest;
 import com.paritoshpal.restaurantservice.domain.models.MenuItemResponse;
 import com.paritoshpal.restaurantservice.domain.models.MenuItemUpdateRequest;
