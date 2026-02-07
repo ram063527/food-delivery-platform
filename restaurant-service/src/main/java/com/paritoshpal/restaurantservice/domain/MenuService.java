@@ -5,6 +5,7 @@ import com.paritoshpal.restaurantservice.domain.models.MenuResponse;
 import com.paritoshpal.restaurantservice.domain.models.MenuSummaryResponse;
 import com.paritoshpal.restaurantservice.domain.models.MenuUpdateRequest;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface MenuService {
@@ -14,6 +15,6 @@ public interface MenuService {
     void deleteMenuById(Long menuId);
     MenuResponse getMenuById(Long menuId);
     MenuResponse updateMenu(Long menuId, MenuUpdateRequest updateMenuRequest);
-
+    void updateAllPricesInMenu(Long menuId, BigDecimal percentageIncrease);
 
 }

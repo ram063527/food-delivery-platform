@@ -12,6 +12,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -87,5 +88,20 @@ public class MenuServiceImpl implements MenuService{
                 .orElseThrow(() -> new RuntimeException("Menu not found"));
         menuMapper.updateMenuEntityFromRequest(updateMenuRequest, menu);
         return menuMapper.toMenuResponse(menuRepository.save(menu));
+    }
+
+    @Override
+    public void updateAllPricesInMenu(Long menuId, BigDecimal percentageIncrease) {
+        MenuEntity menu = menuRepository.findById(menuId)
+                .orElseThrow(()-> MenuNotFoundException.forId(menuId));
+
+        BigDecimal multiplier  = BigDecimal.ONE.add(percentageIncrease.divide(BigDecimal.valueOf(100)));
+
+        menu.getMenuItems().forEach(item -> {
+            BigDecimal currentPrice = item.getPrice();
+            BigDecimal increaseAmount = currentPrice.multiply(multiplier);
+            item.setPrice(increaseAmount);
+        });
+        menuRepository.save(menu);
     }
 }
