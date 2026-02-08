@@ -1,5 +1,6 @@
 package com.paritoshpal.restaurantservice.clients.user;
 
+import io.github.resilience4j.retry.annotation.Retry;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +20,7 @@ public class UserServiceClient {
     private final RestClient restClient;
 
 
+    @Retry(name = "user-service")
     public Optional<UserResponse> getUserById(Long userId){
        log.info("Fetching user for id: {} from User Service", userId);
         try {
@@ -38,6 +40,8 @@ public class UserServiceClient {
         // Note: Other exceptions like ResourceAccessException (Timeout) or
         // HttpClientErrorException.Conflict (409) will bubble up as 500s, which is correct.
     }
+
+
 
 
 
