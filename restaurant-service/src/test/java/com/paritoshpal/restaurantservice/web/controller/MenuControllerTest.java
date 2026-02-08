@@ -212,6 +212,15 @@ class MenuControllerTest extends AbstractIT {
                     .then()
                     .statusCode(404)
                     .body("detail", is("Menu with id " + menuId + " not found."));
+
+
+            // Verify that the menu items associated with the deleted menu are also deleted
+            RestAssured.given()
+                    .when()
+                    .get("/api/menu-items/menu/{menuId}", menuId)
+                    .then()
+                    .statusCode(200)
+                    .body("size()", is(0));
         }
     }
 
