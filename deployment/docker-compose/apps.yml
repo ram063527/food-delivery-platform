@@ -21,3 +21,24 @@ services:
             limits:
               memory: 700m
 
+    restaurant-service:
+        image: ram063527/fooddelivery-restaurant-service
+        container_name: restaurant-service
+        environment:
+            - DB_URL=jdbc:postgresql://restaurants-db:5432/restaurantsdb
+            - DB_USERNAME=postgres
+            - DB_PASSWORD=postgres
+            - RESTAURANT_USER_SERVICE_URL=http://user-service:8081 #restaurant.user-service-url=http://localhost:8081
+        ports:
+            - "8082:8082"
+        restart: unless-stopped
+        depends_on:
+          restaurants-db:
+            condition: service_healthy
+        deploy:
+          resources:
+            limits:
+              memory: 700m
+
+
+

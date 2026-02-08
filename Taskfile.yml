@@ -23,6 +23,7 @@ tasks:
   build:
     cmds:
         - "{{.MVNW}} -pl user-service spring-boot:build-image -DskipTests"
+        - "{{.MVNW}} -pl restaurant-service spring-boot:build-image -DskipTests"
 
   cmds:
     - "docker compose -f {{.INFRA_DC_FILE}} up -d"
