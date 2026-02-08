@@ -19,14 +19,14 @@ class RestaurantControllerTest extends AbstractIT {
 
         @Test
         void shouldCreateRestaurantSuccessfully() {
-            // Given
+            mockGetUserById(101L);
             var payload = """
                     {
                       "name": "Geordie Grill House",
                       "description": "Casual grill restaurant in Newcastle city centre specialising in steaks and burgers.",
                       "phone": "+44 191 555 5678",
                       "email": "hello@geordiegrillhouse.co.uk",
-                      "ownerId": 2,
+                      "ownerId": 101,
                       "cuisine": "Grill",
                       "status": "ACTIVE",
                  

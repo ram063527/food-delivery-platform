@@ -24,7 +24,7 @@ public class UserServiceClient {
         try {
             UserResponse userBody = restClient
                     .get()
-                    .uri("/api/users/{id}", userId)
+                    .uri("/api/users/id/{id}", userId)
                     .retrieve()
                     .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
                         log.error("User with id: {} not found in User Service.", userId);

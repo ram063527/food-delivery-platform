@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.test.context.jdbc.Sql;
 
 import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.*;
+
 
 @Sql("/test-data.sql")
 class RestaurantAddressControllerTest extends AbstractIT {
