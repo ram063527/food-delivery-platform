@@ -105,6 +105,16 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
 
+    @ExceptionHandler(InvalidOwnerException.class)
+    ProblemDetail handleInvalidOwnerException(InvalidOwnerException e) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, e.getMessage());
+        problemDetail.setTitle("Invalid Owner");
+        problemDetail.setType(CONFLICT_TYPE);
+        problemDetail.setProperty("timestamp", Instant.now());
+        return problemDetail;
+    }
+
+
     @Override
     @Nullable
     protected ResponseEntity<Object> handleMethodArgumentNotValid(

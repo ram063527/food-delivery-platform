@@ -8,8 +8,9 @@ import org.springframework.boot.context.properties.bind.DefaultValue;
 public record ApplicationProperties(
     @DefaultValue("10")
     @Min(1)
-    int pageSize
-    )
+    int pageSize,
+    String userServiceUrl
+)
 {
 
 }
