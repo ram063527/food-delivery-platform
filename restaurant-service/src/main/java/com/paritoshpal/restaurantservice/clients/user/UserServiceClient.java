@@ -5,8 +5,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
-import org.springframework.web.client.RestClientException;
 
 import java.util.Optional;
 
@@ -22,18 +22,23 @@ public class UserServiceClient {
     public Optional<UserResponse> getUserById(Long userId){
        log.info("Fetching user for id: {} from User Service", userId);
         try {
+            // We do NOT use onStatus here if we want to catch the exception manually
             UserResponse userBody = restClient
                     .get()
                     .uri("/api/users/id/{id}", userId)
                     .retrieve()
-                    .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                        log.error("User with id: {} not found in User Service.", userId);
-                    })
                     .body(UserResponse.class);
+
             return Optional.ofNullable(userBody);
-        } catch (Exception e) {
-            log.error("Error occurred while fetching user with id: {} from User Service. Error: {}", userId, e.getMessage());
+        } catch (HttpClientErrorException.NotFound ex) {
+            // This catch block specifically handles the 404 from User Service
+            log.warn("User with id: {} was not found in User Service.", userId);
             return Optional.empty();
         }
+        // Note: Other exceptions like ResourceAccessException (Timeout) or
+        // HttpClientErrorException.Conflict (409) will bubble up as 500s, which is correct.
     }
+
+
+
 }

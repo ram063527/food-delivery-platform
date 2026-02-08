@@ -34,6 +34,7 @@ public class UserController {
     public ResponseEntity<UserResponse> getUserById(
                @PathVariable Long id
     ) {
+        sleep();
         log.info("Received request to get user with id: {}", id);
         UserResponse user = userService.getUserById(id);
         return ResponseEntity.status(HttpStatus.OK).body(user);
@@ -88,6 +89,15 @@ public class UserController {
         log.info("Deleted user with id: {}", userId);
         return ResponseEntity.noContent().build();
 
+    }
+
+
+    private void sleep(){
+        try {
+            Thread.sleep(6000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 

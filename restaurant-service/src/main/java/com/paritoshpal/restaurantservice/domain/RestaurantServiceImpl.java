@@ -6,6 +6,7 @@ import com.paritoshpal.restaurantservice.clients.user.UserResponse;
 import com.paritoshpal.restaurantservice.clients.user.UserServiceClient;
 import com.paritoshpal.restaurantservice.domain.exceptions.EmailAlreadyInUseException;
 import com.paritoshpal.restaurantservice.domain.exceptions.InvalidOwnerException;
+import com.paritoshpal.restaurantservice.domain.exceptions.OwnerNotFoundException;
 import com.paritoshpal.restaurantservice.domain.exceptions.RestaurantNotFoundException;
 import com.paritoshpal.restaurantservice.domain.mapper.RestaurantMapper;
 import com.paritoshpal.restaurantservice.domain.models.*;
@@ -42,7 +43,7 @@ public class RestaurantServiceImpl implements RestaurantService {
                 });
         // Check User Service if the ownerId is valid or not
         UserResponse user = client.getUserById(request.ownerId())
-                .orElseThrow(() -> InvalidOwnerException.notFound(request.ownerId()));
+                .orElseThrow(()-> OwnerNotFoundException.withId(request.ownerId()));
 
         // 4. Role Verification
         if (user.role() != Role.RESTAURANT_OWNER) {
