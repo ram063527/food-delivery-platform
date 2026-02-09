@@ -22,16 +22,16 @@ public class AddressServiceImpl implements AddressService {
     private final UserRepository userRepository;
 
     @Override
-    public AddressResponse createAddress(CreateAddressRequest request) {
+    public AddressResponse createAddress(Long userId, CreateAddressRequest request) {
         // 1. Convert to Entity
         AddressEntity addressEntity = addressMapper.toEntity(request);
         // Get CurrentLogged in User :
-        UserEntity userEntity = userRepository.findById(request.userId())
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + request.userId()));
+        UserEntity userEntity = userRepository.findById(userId)
+                .orElseThrow(()-> UserNotFoundException.forId(userId));
         addressEntity.setUser(userEntity);
         // 2. Save Entity
         AddressEntity savedAddress = addressRepository.save(addressEntity);
-        log.info("Created address with id: {} for user id: {}", savedAddress.getId(), request.userId());
+        log.info("Created address with id: {} for user id: {}", savedAddress.getId(), userId);
         // 3. Convert to Response
         return addressMapper.toResponse(savedAddress);
     }

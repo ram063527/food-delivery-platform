@@ -11,7 +11,7 @@ import static org.hamcrest.Matchers.*;
 
 
 @Sql("/test_data.sql")
-class AddressControllerTest extends AbstractIT {
+class UserAddressControllerTest extends AbstractIT {
 
 
     @Nested
@@ -19,9 +19,9 @@ class AddressControllerTest extends AbstractIT {
 
         @Test
         void shouldCreateAddressSuccessfully() {
+            Long userId = 1L;
             var payload = """
                     {
-                      "userId": 1,
                       "streetAddress": "123 Elm St",
                       "city": "Springfield",
                       "state": "IL",
@@ -35,7 +35,7 @@ class AddressControllerTest extends AbstractIT {
                     .contentType(ContentType.JSON)
                     .body(payload)
                     .when()
-                    .post("/api/address")
+                    .post("/api/users/{userId}/addresses", userId)
                     .then()
                     .statusCode(201)
                     .body("id",notNullValue())
@@ -49,9 +49,9 @@ class AddressControllerTest extends AbstractIT {
 
         @Test
         void shouldReturnBadRequestWhenMandatoryFieldsAreMissing() {
+            Long userId = 1L;
             var payload = """
                     {
-                      "userId": 1,
                       "streetAddress": "",
                       "city": "",
                       "state": "",
@@ -64,7 +64,7 @@ class AddressControllerTest extends AbstractIT {
                     .contentType(ContentType.JSON)
                     .body(payload)
                     .when()
-                    .post("/api/address")
+                    .post("/api/users/{userId}/addresses", userId)
                     .then()
                     .statusCode(400)
                     .body("errors",hasItems(
@@ -87,6 +87,7 @@ class AddressControllerTest extends AbstractIT {
         @Test
         void shouldUpdateAddressSuccessfully() {
             Long userId = 1L;
+            Long addressId = 1L;
             var payload = """
                     {
                       "streetAddress": "71 Sidney Grove",
@@ -102,7 +103,7 @@ class AddressControllerTest extends AbstractIT {
                     .contentType(ContentType.JSON)
                     .body(payload)
                     .when()
-                    .put("/api/address/{id}", userId)
+                    .put("/api/users/{userId}/addresses/{addressId}", userId,addressId)
                     .then()
                     .statusCode(200)
                     .body("id",is(1))
@@ -117,6 +118,7 @@ class AddressControllerTest extends AbstractIT {
         @Test
         void shouldMakeNoChangesWhenNoFieldsAreProvided() {
             Long userId = 1L;
+            Long addressId = 1L;
             var payload = """
                     {
                     
@@ -128,7 +130,7 @@ class AddressControllerTest extends AbstractIT {
                     .contentType(ContentType.JSON)
                     .body(payload)
                     .when()
-                    .put("/api/address/{id}", userId)
+                    .put("/api/users/{userId}/addresses/{addressId}", userId,addressId)
                     .then()
                     .statusCode(200)
                     .body("id", is(1))
@@ -146,11 +148,11 @@ class AddressControllerTest extends AbstractIT {
 
         @Test
         void shouldGetAddressByIdSuccessfully() {
-            Long id = 1L;
-
+            Long addressId = 1L;
+            Long userId = 1L;
             given()
                     .when()
-                    .get("/api/address/id/{id}", id)
+                    .get("/api/users/{userId}/addresses/{addressId}", userId, addressId)
                     .then()
                     .statusCode(200)
                     .body("id", is(1))
@@ -164,45 +166,16 @@ class AddressControllerTest extends AbstractIT {
 
         @Test
         void shouldReturnNotFoundWhenAddressDoesNotExist() {
-            Long id = 999L;
-
+            Long addressId = 999L;
+            Long userId = 1L;
             given()
                     .when()
-                    .get("/api/address/id/{id}", id)
+                    .get("/api/users/{userId}/addresses/{addressId}", userId, addressId)
                     .then()
                     .statusCode(404);
         }
 
-        @Test
-        void shouldGetAddressByUserEmailSuccessfully() {
-            String email = "alice.white@example.com";
 
-            given()
-                    .when()
-                    .get("/api/address/email/{email}", email)
-                    .then()
-                    .statusCode(200)
-                    .body("[0].id", notNullValue())
-                    .body("[0].streetAddress", is("202 Birch Boulevard"))
-                    .body("[0].city", is("Miami"))
-                    .body("[0].state", is("FL"))
-                    .body("[0].postalCode", is("33101"))
-                    .body("[0].country", is("USA"));
-        }
-
-        @Test
-        void shouldReturnEmailNotFoundWhenUserEmailDoesNotExist() {
-            String email = "someEmail@gmail.com";
-
-            given()
-                    .when()
-                    .get("/api/address/email/{email}", email)
-                    .then()
-                    .statusCode(404)
-                    .body("detail",is(
-                            "User with email "+email+" not found"
-                    ));
-        }
 
         @Test
         void shouldGetAddressByUserIdSuccessfully() {
@@ -210,7 +183,7 @@ class AddressControllerTest extends AbstractIT {
 
              given()
                     .when()
-                    .get("/api/address/userId/{userId}", userId)
+                    .get("/api/users/{userId}/addresses", userId)
                     .then()
                     .statusCode(200)
                      .body("[0].id", notNullValue())
@@ -228,29 +201,13 @@ class AddressControllerTest extends AbstractIT {
 
             given()
                     .when()
-                    .get("/api/address/userId/{userId}", userId)
+                    .get("/api/users/{userId}/addresses", userId)
                     .then()
                     .statusCode(404)
                     .body("detail",is(
                             "User with id "+userId+" not found"
                     ));
         }
-
-
-
-
-        @Test
-        void shouldReturnEmptyListWhenUserHasNoAddress() {
-            String email = "ram.white@example.com";
-            given()
-                    .when()
-                    .get("/api/address/email/{email}", email)
-                    .then()
-                    .statusCode(200)
-                    .body("$", hasSize(0));
-        }
-
-
     }
 
     @Nested
@@ -258,18 +215,18 @@ class AddressControllerTest extends AbstractIT {
 
         @Test
         void shouldDeleteAddressSuccessfully() {
-            Long id = 1L;
-
+            Long addressId = 1L;
+            Long userId = 1L;
             given()
                     .when()
-                    .delete("/api/address/{id}", id)
+                    .delete("api/users/{userId}/addresses/{addressId}", userId, addressId)
                     .then()
                     .statusCode(204);
 
             // Verify that the address is deleted
             given()
                     .when()
-                    .get("/api/address/id/{id}", id)
+                    .get("/api/users/{userId}/addresses/{addressId}", userId, addressId)
                     .then()
                     .statusCode(404);
         }

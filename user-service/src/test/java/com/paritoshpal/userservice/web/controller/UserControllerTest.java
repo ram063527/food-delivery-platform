@@ -199,7 +199,7 @@ class UserControllerTest extends AbstractIT {
                     .contentType(ContentType.JSON)
                     .body(payload)
                     .when()
-                    .put("/api/users/{userId}", nonExistantUserId)
+                    .put("/api/users/{id}", nonExistantUserId)
                     .then()
                     .statusCode(404)
                     .body("detail", equalTo("User with id 999 not found"));
@@ -230,7 +230,7 @@ class UserControllerTest extends AbstractIT {
         void shouldSuccessfullyGetUserById() {
             given()
                     .when()
-                    .get("/api/users/id/{id}", 1)
+                    .get("/api/users/{id}", 1)
                     .then()
                     .statusCode(200)
                     .body("id", notNullValue())
@@ -244,7 +244,7 @@ class UserControllerTest extends AbstractIT {
             String nonExistentUserId = "999";
             given()
                     .when()
-                    .get("/api/users/id/{id}", nonExistentUserId)
+                    .get("/api/users/{id}", nonExistentUserId)
                     .then()
                     .statusCode(404)
                     .body("detail", equalTo("User with id 999 not found"));
@@ -255,7 +255,7 @@ class UserControllerTest extends AbstractIT {
             String email = "john.doe@example.com";
             given()
                     .when()
-                    .get("/api/users/email/{email}", email)
+                    .get("/api/users/search?email={email}", email)
                     .then()
                     .statusCode(200)
                     .body("id", notNullValue())
@@ -267,7 +267,7 @@ class UserControllerTest extends AbstractIT {
             String nonExistentEmail = "something@exmaple.com";
             given()
                     .when()
-                    .get("/api/users/email/{email}", nonExistentEmail)
+                    .get("/api/users/search?email={email}", nonExistentEmail)
                     .then()
                     .statusCode(404)
                     .body("detail", equalTo("User with email "+nonExistentEmail +" not found"));
@@ -278,7 +278,7 @@ class UserControllerTest extends AbstractIT {
             String role = "CUSTOMER";
             List<UserResponse> users = given()
                     .when()
-                    .get("/api/users/role/{role}", role)
+                    .get("/api/users/search?role={role}", role)
                     .then()
                     .statusCode(200)
                     .extract()
@@ -294,7 +294,7 @@ class UserControllerTest extends AbstractIT {
              String role = "ADMIN@1234";
               given()
                      .when()
-                     .get("/api/users/role/{role}", role)
+                     .get("/api/users/search?role={role}", role)
                      .then()
                      .statusCode(400);
          }
@@ -310,14 +310,14 @@ class UserControllerTest extends AbstractIT {
         void shouldDeleteUserSuccessfully() {
             given()
                     .when()
-                    .delete("/api/users/{userId}", 1)
+                    .delete("/api/users/{id}", 1)
                     .then()
                     .statusCode(204);
 
             // Verify user is deleted
             given()
                     .when()
-                    .get("/api/users/id/{id}", 1)
+                    .get("/api/users/{id}", 1)
                     .then()
                     .statusCode(404);
         }
@@ -327,7 +327,7 @@ class UserControllerTest extends AbstractIT {
             String nonExistentUserId = "999";
             given()
                     .when()
-                    .delete("/api/users/{userId}", nonExistentUserId)
+                    .delete("/api/users/{id}", nonExistentUserId)
                     .then()
                     .statusCode(404)
                     .body("detail", equalTo("User with id 999 not found"));

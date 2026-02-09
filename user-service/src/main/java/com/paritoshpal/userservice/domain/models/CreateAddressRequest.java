@@ -4,7 +4,6 @@ import jakarta.validation.constraints.NotBlank;
 
 public record CreateAddressRequest(
 
-        Long userId,
         @NotBlank(message = "Street address cannot be empty")
         String streetAddress,
         @NotBlank(message = "City cannot be empty")

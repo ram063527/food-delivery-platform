@@ -30,7 +30,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(users);
     }
 
-    @GetMapping("/id/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<UserResponse> getUserById(
                @PathVariable Long id
     ) {
@@ -40,23 +40,25 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(user);
     }
 
-    @GetMapping("/email/{email}")
-    public ResponseEntity<UserResponse> getUserByEmail(
-           @PathVariable String email) {
-        log.info("Received request to get user with email: {}", email);
-        UserResponse user = userService.getUserByEmail(email);
-        return ResponseEntity.status(HttpStatus.OK).body(user);
-    }
+    @GetMapping("/search")
+    public ResponseEntity<?> searchUsers(
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) Role role
+    ) {
+        if(email!=null){
+            log.info("Received request to search user with email: {}", email);
+            UserResponse user = userService.getUserByEmail(email);
+            return ResponseEntity.status(HttpStatus.OK).body(user);
+        } else if(role!=null){
+            log.info("Received request to search users with role: {}", role);
+            List<UserResponse> users = userService.getUsersByRole(role);
+            return ResponseEntity.status(HttpStatus.OK).body(users);
+        } else {
+            log.warn("Received search request without email or role");
+            return ResponseEntity.badRequest().body("Please provide either email or role as a search parameter");
+        }
+     }
 
-    @GetMapping("/role/{role}")
-    public ResponseEntity<List<UserResponse>> getUsersByRole(
-            @PathVariable Role role) {
-
-        log.info("Received request to get users with role: {}", role);
-        List<UserResponse> users = userService.getUsersByRole(role);
-        return ResponseEntity.status(HttpStatus.OK).body(users);
-
-    }
 
     @PostMapping
     public ResponseEntity<UserResponse> createUser(
@@ -68,25 +70,25 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
     }
 
-    @PutMapping("/{userId}")
+    @PutMapping("/{id}")
     public ResponseEntity<UserResponse> updateUser(
-            @PathVariable Long userId,
+            @PathVariable Long id,
             @RequestBody @Valid UpdateUserRequest request
             ) {
 
         log.info("Received request to update user");
-        UserResponse updatedUser = userService.updateUser(userId, request);
+        UserResponse updatedUser = userService.updateUser(id, request);
         log.info("Updated user with id: {}", updatedUser.id());
         return ResponseEntity.status(HttpStatus.OK).body(updatedUser);
     }
 
-    @DeleteMapping("/{userId}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(
-            @PathVariable Long userId
+            @PathVariable Long id
     ) {
-        log.info("Received request to delete user with id: {}", userId);
-        userService.deleteUser(userId);
-        log.info("Deleted user with id: {}", userId);
+        log.info("Received request to delete user with id: {}", id);
+        userService.deleteUser(id);
+        log.info("Deleted user with id: {}", id);
         return ResponseEntity.noContent().build();
 
     }
