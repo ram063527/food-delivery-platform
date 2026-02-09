@@ -34,7 +34,7 @@ public class UserController {
     public ResponseEntity<UserResponse> getUserById(
                @PathVariable Long id
     ) {
-        sleep();
+//        sleep();
         log.info("Received request to get user with id: {}", id);
         UserResponse user = userService.getUserById(id);
         return ResponseEntity.status(HttpStatus.OK).body(user);

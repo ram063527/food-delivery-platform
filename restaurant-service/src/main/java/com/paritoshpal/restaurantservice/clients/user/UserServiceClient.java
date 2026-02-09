@@ -1,10 +1,10 @@
 package com.paritoshpal.restaurantservice.clients.user;
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
@@ -20,6 +20,7 @@ public class UserServiceClient {
     private final RestClient restClient;
 
 
+    @CircuitBreaker(name = "user-service")
     @Retry(name = "user-service")
     public Optional<UserResponse> getUserById(Long userId){
        log.info("Fetching user for id: {} from User Service", userId);
