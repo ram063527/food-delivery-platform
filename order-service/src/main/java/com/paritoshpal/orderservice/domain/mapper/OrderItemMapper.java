@@ -11,6 +11,7 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 public interface OrderItemMapper {
 
 
+    @Mapping(target = "menuItemName", ignore = true) //
     OrderItemResponse toOrderItemResponse(OrderItemEntity orderItem);
 
     @Mapping(target = "id", ignore = true)

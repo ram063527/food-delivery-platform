@@ -15,6 +15,7 @@ public interface OrderMapper {
 
     OrderResponse toOrderResponse(OrderEntity order);
 
+    @Mapping(target = "restaurantName", ignore = true)
     OrderDetailedResponse toOrderDetailedResponse(OrderEntity order);
 
 

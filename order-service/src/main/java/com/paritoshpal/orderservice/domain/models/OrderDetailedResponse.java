@@ -5,9 +5,11 @@ import java.util.List;
 
 public record OrderDetailedResponse(
         Long id,
-        Long orderNumber,
+        String orderNumber,
         List<OrderItemResponse> orderItems,
-        Long restaurantId, // For Front end to fetch the restaurant details, using another endpoint
+        Long restaurantId,// For Front end to fetch the restaurant details, using another endpoint
+        String restaurantName, // For Front end to display the restaurant name in the order details
+        String status,
         Long deliveryAddressId, // For Front end to fetch the address details, using another endpoint
         BigDecimal totalAmount,
         BigDecimal deliveryFee,
