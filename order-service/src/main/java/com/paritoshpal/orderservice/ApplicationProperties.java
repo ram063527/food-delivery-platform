@@ -1,0 +1,13 @@
+package com.paritoshpal.orderservice;
+
+import org.springframework.boot.context.properties.ConfigurationProperties;
+
+@ConfigurationProperties(prefix = "orders")
+public record ApplicationProperties(
+        String orderEventsExchange,
+        String newOrdersQueue,
+        String confirmedOrdersQueue,
+        String cancelledOrdersQueue,
+        String errorOrdersQueue
+) {
+}
