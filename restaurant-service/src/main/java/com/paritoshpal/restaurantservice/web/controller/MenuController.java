@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -64,6 +65,17 @@ public class MenuController {
         MenuResponse updatedMenu = menuService.updateMenu(menuId, request);
         log.info("Updated menu with id: {}", updatedMenu.id());
         return ResponseEntity.ok(updatedMenu);
+    }
+
+    @PatchMapping("/{menuId}/items")
+    public ResponseEntity<Void> updateMenuPrices(
+            @PathVariable Long menuId,
+            @RequestParam BigDecimal percentage
+            ){
+        log.info("Received request to update menu prices for menuId: {} with percentage: {}", menuId, percentage);
+        menuService.updateAllPricesInMenu(menuId, percentage);
+        log.info("Updated menu prices for menuId: {} with percentage: {}", menuId, percentage);
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{menuId}")

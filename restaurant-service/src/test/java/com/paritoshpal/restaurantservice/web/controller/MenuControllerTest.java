@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.jdbc.Sql;
 
+import java.math.BigDecimal;
+
 import static org.hamcrest.Matchers.*;
 
 @Sql("/test-data.sql")
@@ -162,9 +164,30 @@ class MenuControllerTest extends AbstractIT {
                     .body("id", notNullValue())
                     .body("name", is("Updated Menu Name"))
                     .body("description", is("Updated description for the menu."));
+        }
 
+        @Test
+        void shouldUpdateAllMenuItemPricesSuccessfully() {
+            Long menuId = 1L;
+            BigDecimal percentage = new  BigDecimal("10.0");
 
+            RestAssured.given()
+                    .when()
+                    .patch("/api/menus/{menuId}/items?percentage={percentage}", menuId, percentage)
+                    .then()
+                    .statusCode(204);
 
+            // Verify that the prices of all menu items in the menu have been updated correctly
+            RestAssured.given()
+                    .when()
+                    .get("/api/menu-items/menu/{menuId}", menuId)
+                    .then()
+                    .statusCode(200)
+                    .body("size()", is(21))
+                    .body("find { it.name == 'Butter Chicken' }.price", is(13.75f)) // 12.50 + 10% = 13.75
+                    .body("find { it.name == 'Paneer Tikka' }.price", is(12.10f)) // 11.00 + 10% = 12.10
+                    .body("find { it.name == 'Garlic Naan' }.price", is(3.85f)) // 3.50 + 10% = 3.85
+                    .body("find { it.name == 'Chana Masala' }.price", is(10.45f)); // 9.50 + 10% = 10.45
         }
 
         @Test
