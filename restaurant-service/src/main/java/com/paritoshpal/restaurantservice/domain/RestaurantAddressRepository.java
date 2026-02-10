@@ -8,4 +8,6 @@ public interface RestaurantAddressRepository extends JpaRepository<RestaurantAdd
 
 
     Optional<RestaurantAddressEntity> findByRestaurantId(Long restaurantId);
+
+    Optional<RestaurantAddressEntity> findByRestaurant(RestaurantEntity restaurant);
 }

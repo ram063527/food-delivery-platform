@@ -6,12 +6,10 @@ import com.paritoshpal.restaurantservice.domain.models.RestaurantAddressUpdateRe
 
 public interface RestaurantAddressService {
 
-    RestaurantAddressResponse createRestaurantAddress(CreateRestaurantAddressRequest request);
-    RestaurantAddressResponse updateRestaurantAddress(Long restaurantAddressId, RestaurantAddressUpdateRequest request);
-    void deleteRestaurantAddress(Long restaurantAddressId);
+    RestaurantAddressResponse createRestaurantAddress(Long restaurantId, CreateRestaurantAddressRequest request);
+    RestaurantAddressResponse updateRestaurantAddress(Long restaurantId, RestaurantAddressUpdateRequest request);
     void deleteRestaurantAddressByRestaurantId(Long restaurantId);
     RestaurantAddressResponse getAddressByRestaurantId(Long restaurantId);
-    RestaurantAddressResponse getRestaurantAddressById(Long restaurantAddressId);
 
 
 }

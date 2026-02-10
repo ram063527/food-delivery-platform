@@ -20,9 +20,10 @@ class RestaurantAddressControllerTest extends AbstractIT {
         @Test
         void shouldCreateRestaurantAddressSuccessfully() {
 
+            Long restaurantId = 251L;
             var payload = """
                     {
-                      "restaurantId": 251,
+             
                       "streetAddress": "12 Grey Street",
                       "city": "Newcastle upon Tyne",
                       "state": "Tyne and Wear",
@@ -37,7 +38,7 @@ class RestaurantAddressControllerTest extends AbstractIT {
                     .contentType(ContentType.JSON)
                     .body(payload)
                     .when()
-                    .post("/api/restaurants-addresses")
+                    .post("/api/restaurant/{restaurantId}/address", restaurantId)
                     .then()
                     .statusCode(201)
                     .body("id", notNullValue())
@@ -55,7 +56,7 @@ class RestaurantAddressControllerTest extends AbstractIT {
             Long restaurantId = 1L;
             var payload = """
                     {
-                      "restaurantId": 1,
+                   
                       "streetAddress": "12 Grey Street",
                       "city": "Newcastle upon Tyne",
                       "state": "Tyne and Wear",
@@ -70,7 +71,7 @@ class RestaurantAddressControllerTest extends AbstractIT {
                     .contentType(ContentType.JSON)
                     .body(payload)
                     .when()
-                    .post("/api/restaurants-addresses")
+                    .post("/api/restaurant/{restaurantId}/address", restaurantId)
                     .then()
                     .statusCode(409)
                     .body("detail", is("Restaurant with id "+restaurantId  +" already has an address."));
@@ -80,9 +81,9 @@ class RestaurantAddressControllerTest extends AbstractIT {
         @Test
         void shouldReturnBadRequestWhenPayloadIsInvalid(){
 
+            Long restaurantId = 51L;
             var payload = """
                     {
-                      "restaurantId": null,
                       "streetAddress": "",
                       "city": "",
                       "state": "",
@@ -97,11 +98,11 @@ class RestaurantAddressControllerTest extends AbstractIT {
                     .contentType(ContentType.JSON)
                     .body(payload)
                     .when()
-                    .post("/api/restaurants-addresses")
+                    .post("/api/restaurant/{restaurantId}/address", restaurantId)
                     .then()
                     .statusCode(400)
                     .body("errors", containsInAnyOrder(
-                            "Restaurant ID cannot be null",
+
                             "Street address cannot be empty",
                             "City cannot be empty",
                             "State cannot be empty",
@@ -116,88 +117,75 @@ class RestaurantAddressControllerTest extends AbstractIT {
     class UpdateRestaurantAddressTests {
 
         @Test
-        void shouldUpdateRestaurantAddressSuccessfully() {
-            Long addressId = 1L;
+        void shouldUpdateRestaurantAddressSuccessfully(){
+            Long restaurantId = 1L;
+
             var payload = """
                     {
-                      "streetAddress": "Updated Street",
-                      "city": "Updated City",
-                      "state": "Updated State",
-                      "postalCode": "Updated Postal Code",
-                      "country": "Updated Country",
-                      "latitude": 40.7128,
-                      "longitude": -74.0060
+                      "streetAddress": "13 Grey Street",
+                      "city": "Newcastle upon Tyne",
+                      "state": "Tyne and Wear",
+                      "postalCode": "NE1 6AE",
+                      "country": "United Kingdom",
+                      "latitude": 54.9723,
+                      "longitude": -1.6139
                     }
-                    
                     """;
+
             RestAssured.given()
                     .contentType(ContentType.JSON)
                     .body(payload)
                     .when()
-                    .put("/api/restaurants-addresses/{addressId}", addressId)
+                    .put("/api/restaurant/{restaurantId}/address", restaurantId)
                     .then()
                     .statusCode(200)
-                    .body("id", is(addressId.intValue()))
-                    .body("streetAddress", is("Updated Street"))
-                    .body("city", is("Updated City"))
-                    .body("state", is("Updated State"))
-                    .body("postalCode", is("Updated Postal Code"))
-                    .body("country", is("Updated Country"))
-                    .body("latitude", is(40.7128f))
-                    .body("longitude", is(-74.0060f));
+                    .body("id", notNullValue())
+                    .body("streetAddress", is("13 Grey Street"))
+                    .body("city", is("Newcastle upon Tyne"))
+                    .body("state", is("Tyne and Wear"))
+                    .body("postalCode", is("NE1 6AE"))
+                    .body("country", is("United Kingdom"))
+                    .body("latitude", is(54.9723f))
+                    .body("longitude", is(-1.6139f));
         }
 
         @Test
-        void shouldReturnNotFoundWhenAddressDoesNotExist() {
-            Long addressId = 999L;
+        void shouldReturnNotFoundWhenRestaurantDoesNotExists(){
+            Long nonExistantRestaurantId = 9999L;
+
             var payload = """
                     {
-                      "streetAddress": "Updated Street",
-                      "city": "Updated City",
-                      "state": "Updated State",
-                      "postalCode": "Updated Postal Code",
-                      "country": "Updated Country",
-                      "latitude": 40.7128,
-                      "longitude": -74.0060
+                      "streetAddress": "13 Grey Street",
+                      "city": "Newcastle upon Tyne",
+                      "state": "Tyne and Wear",
+                      "postalCode": "NE1 6AE",
+                      "country": "United Kingdom",
+                      "latitude": 54.9723,
+                      "longitude": -1.6139
                     }
-                    
                     """;
+
             RestAssured.given()
                     .contentType(ContentType.JSON)
                     .body(payload)
                     .when()
-                    .put("/api/restaurants-addresses/{addressId}", addressId)
+                    .put("/api/restaurant/{restaurantId}/address", nonExistantRestaurantId)
                     .then()
-                    .statusCode(404)
-                    .body("detail", is("Restaurant address not found for address ID: "+addressId));
+                    .statusCode(404);
         }
     }
 
     @Nested
     class DeleteRestaurantAddressTests {
 
-        @Test
-        void shouldDeleteRestaurantAddressByIdSuccessfully() {
-            Long addressId = 1L;
-            RestAssured.given()
-                    .when()
-                    .delete("/api/restaurants-addresses/{addressId}", addressId)
-                    .then()
-                    .statusCode(204);
-            // Verify that the address is actually deleted
-            RestAssured.given()
-                    .when()
-                    .get("/api/restaurants-addresses/{addressId}", addressId)
-                    .then()
-                    .statusCode(404);
-        }
+
 
         @Test
         void shouldDeleteRestaurantAddressByRestaurantIdSuccessfully() {
             Long restaurantId = 51L;
             RestAssured.given()
                     .when()
-                    .delete("/api/restaurants-addresses/restaurant/{restaurantId}", restaurantId)
+                    .delete("/api/restaurant/{restaurantId}/address", restaurantId)
                     .then()
                     .statusCode(204);
             // Verify that the address is actually deleted
@@ -219,7 +207,7 @@ class RestaurantAddressControllerTest extends AbstractIT {
 
             RestAssured.given()
                     .when()
-                    .get("/api/restaurants-addresses/restaurant/{restaurantId}", restaurantId)
+                    .get("/api/restaurant/{restaurantId}/address", restaurantId)
                     .then()
                     .statusCode(200)
                     .body("id", notNullValue())
@@ -232,36 +220,11 @@ class RestaurantAddressControllerTest extends AbstractIT {
 
             RestAssured.given()
                     .when()
-                    .get("/api/restaurants-addresses/restaurant/{restaurantId}", nonExistingRestaurantId)
+                    .get("/api/restaurant/{restaurantId}/address", nonExistingRestaurantId)
                     .then()
                     .statusCode(404);
         }
 
-        @Test
-        void shouldGetAddressByAddressIdSuccessfully() {
-            // Assuming Address ID 1 corresponds to your first restaurant
-            Long addressId = 1L;
-
-            RestAssured.given()
-                    .when()
-                    .get("/api/restaurants-addresses/{addressId}", addressId)
-                    .then()
-                    .statusCode(200)
-                    .body("id", is(1))
-                    .body("city", notNullValue())
-                    .body("postalCode", notNullValue());
-        }
-
-        @Test
-        void shouldReturnNotFoundForNonExistingAddressId() {
-            Long nonExistingAddressId = 999L;
-
-            RestAssured.given()
-                    .when()
-                    .get("/api/restaurants-addresses/{addressId}", nonExistingAddressId)
-                    .then()
-                    .statusCode(404);
-        }
     }
 
 }

@@ -23,14 +23,14 @@ public class RestaurantAddressServiceImpl implements  RestaurantAddressService
     private final RestaurantAddressMapper restaurantAddressMapper;
 
     @Override
-    public RestaurantAddressResponse createRestaurantAddress(CreateRestaurantAddressRequest request) {
+    public RestaurantAddressResponse createRestaurantAddress(Long restaurantId, CreateRestaurantAddressRequest request) {
         // 1. Validate the request (e.g., check if restaurant exists, validate address fields)
-        RestaurantEntity restaurantEntity = restaurantRepository.findById(request.restaurantId())
-                .orElseThrow(() -> RestaurantNotFoundException.forId(request.restaurantId()));
+        RestaurantEntity restaurantEntity = restaurantRepository.findById(restaurantId)
+                .orElseThrow(() -> RestaurantNotFoundException.forId(restaurantId));
 
         restaurantAddressRepository.findByRestaurantId(restaurantEntity.getId())
                 .ifPresent(a -> {
-                    throw RestaurantAddressAlreadyExistsException.forRestaurantId(request.restaurantId());
+                    throw RestaurantAddressAlreadyExistsException.forRestaurantId(restaurantId);
                 });
 
         // 2. Map the request to an entity
@@ -45,41 +45,24 @@ public class RestaurantAddressServiceImpl implements  RestaurantAddressService
     }
 
     @Override
-    public RestaurantAddressResponse updateRestaurantAddress(Long restaurantAddressId, RestaurantAddressUpdateRequest request) {
-        // 1. Validate the request (e.g., check if restaurant address exists, validate address fields)
-        RestaurantAddressEntity restaurantAddressEntity = restaurantAddressRepository.findById(restaurantAddressId)
-                .orElseThrow(() -> RestaurantAddressNotFoundException.forAddressId(restaurantAddressId));
+    public RestaurantAddressResponse updateRestaurantAddress(Long restaurantId, RestaurantAddressUpdateRequest request) {
+
+
+        RestaurantEntity restaurant = restaurantRepository.findById(restaurantId).orElseThrow(()-> RestaurantNotFoundException.forId(restaurantId));
+
+        RestaurantAddressEntity restaurantAddress = restaurantAddressRepository.findByRestaurant(restaurant)
+                .orElseThrow(()-> RestaurantAddressNotFoundException.forRestaurantId(restaurantId));
 
         // 2. Map the update request to the existing entity
-        restaurantAddressMapper.updateRestaurantAddressFromRequest(request, restaurantAddressEntity);
+        restaurantAddressMapper.updateRestaurantAddressFromRequest(request, restaurantAddress);
 
         // 3. Save the updated entity to the database
-        RestaurantAddressEntity updatedEntity = restaurantAddressRepository.save(restaurantAddressEntity);
+        RestaurantAddressEntity updatedEntity = restaurantAddressRepository.save(restaurantAddress);
 
         // 4. Map the updated entity to a response DTO
         return restaurantAddressMapper.toAddressResponse(updatedEntity);
     }
 
-    @Override
-    public void deleteRestaurantAddress(Long restaurantAddressId) {
-        // 1. Find the address
-        RestaurantAddressEntity address = restaurantAddressRepository.findById(restaurantAddressId)
-                .orElseThrow(() -> new RestaurantAddressNotFoundException("Restaurant address not found with ID: " + restaurantAddressId));
-
-        // 2. Get the associated restaurant
-        RestaurantEntity restaurant = address.getRestaurant();
-
-        // 3. Break the relationship from the parent side
-        if (restaurant != null) {
-            restaurant.setAddress(null);
-            // orphanRemoval = true on RestaurantEntity will now automatically
-            // delete the address record from the database when the restaurant is saved.
-            restaurantRepository.save(restaurant);
-        } else {
-            // Fallback for an orphaned address
-            restaurantAddressRepository.delete(address);
-        }
-    }
 
     @Override
     public void deleteRestaurantAddressByRestaurantId(Long restaurantId) {
@@ -102,14 +85,6 @@ public class RestaurantAddressServiceImpl implements  RestaurantAddressService
         RestaurantAddressEntity restaurantAddressEntity = restaurantAddressRepository.findByRestaurantId(restaurantId)
                 .orElseThrow(() -> RestaurantAddressNotFoundException.forRestaurantId(restaurantId));
         return restaurantAddressMapper.toAddressResponse(restaurantAddressEntity);
-    }
-
-    @Override
-    public RestaurantAddressResponse getRestaurantAddressById(Long restaurantAddressId) {
-        RestaurantAddressEntity restaurantAddressEntity = restaurantAddressRepository.findById(restaurantAddressId)
-                .orElseThrow(() -> RestaurantAddressNotFoundException.forAddressId(restaurantAddressId));
-        return restaurantAddressMapper.toAddressResponse(restaurantAddressEntity);
-
     }
 
 

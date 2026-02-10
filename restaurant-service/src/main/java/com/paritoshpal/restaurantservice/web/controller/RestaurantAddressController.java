@@ -13,46 +13,53 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/restaurants-addresses")
+@RequestMapping("/api/restaurant/{restaurantId}/address")
 @RequiredArgsConstructor
 public class RestaurantAddressController {
 
     private static final Logger log = LoggerFactory.getLogger(RestaurantAddressController.class);
     private final RestaurantAddressService restaurantAddressService;
+
+
+    @GetMapping
+    public ResponseEntity<RestaurantAddressResponse> getAddressByRestaurantId(
+            @PathVariable Long restaurantId
+    ) {
+        log.info("Received request to get address for restaurant with id: {}", restaurantId);
+        RestaurantAddressResponse address =
+                restaurantAddressService.getAddressByRestaurantId(restaurantId);
+        return ResponseEntity.ok(address);
+
+
+    }
+
+
     @PostMapping
     public ResponseEntity<RestaurantAddressResponse> createRestaurantAddress(
+            @PathVariable Long restaurantId,
             @RequestBody @Valid CreateRestaurantAddressRequest request
     ) {
-
-        log.info("Received request to create address for restaurantId: {}", request.restaurantId());
-        RestaurantAddressResponse createdAddress = restaurantAddressService.createRestaurantAddress(request);
+        log.info("REST request to save RestaurantAddress : {}", request);
+        RestaurantAddressResponse createdAddress = restaurantAddressService.createRestaurantAddress(restaurantId, request);
         log.info("Created restaurant address with id: {}", createdAddress.id());
         return ResponseEntity.status(HttpStatus.CREATED).body(createdAddress);
     }
 
-    @PutMapping("/{addressId}")
+    @PutMapping
     public ResponseEntity<RestaurantAddressResponse> updateRestaurantAddress(
-            @PathVariable Long addressId,
+            @PathVariable Long restaurantId,
             @RequestBody @Valid RestaurantAddressUpdateRequest request
     ) {
-        log.info("Received request to update restaurant address with id: {}", addressId);
+        log.info("REST request to update Restaurant address with restaurant id:  {}", restaurantId);
         RestaurantAddressResponse updatedAddress =
-                restaurantAddressService.updateRestaurantAddress(addressId, request);
+                restaurantAddressService.updateRestaurantAddress(restaurantId, request);
         log.info("Updated restaurant address with id: {}", updatedAddress.id());
         return ResponseEntity.ok(updatedAddress);
     }
 
-    @DeleteMapping("/{addressId}")
-    public ResponseEntity<Void> deleteRestaurantAddress(
-            @PathVariable Long addressId
-    ) {
-        log.info("Received request to delete restaurant address with id: {}", addressId);
-        restaurantAddressService.deleteRestaurantAddress(addressId);
-        log.info("Deleted restaurant address with id: {}", addressId);
-        return ResponseEntity.noContent().build();
-    }
 
-    @DeleteMapping("/restaurant/{restaurantId}")
+
+    @DeleteMapping()
     public ResponseEntity<Void> deleteRestaurantAddressByRestaurantId(
             @PathVariable Long restaurantId
     ) {
@@ -62,24 +69,7 @@ public class RestaurantAddressController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/restaurant/{restaurantId}")
-    public ResponseEntity<RestaurantAddressResponse> getAddressByRestaurantId(
-            @PathVariable Long restaurantId
-    ) {
-        log.info("Received request to get address for restaurant with id: {}", restaurantId);
-        RestaurantAddressResponse address =
-                restaurantAddressService.getAddressByRestaurantId(restaurantId);
-        return ResponseEntity.ok(address);
-    }
 
-    @GetMapping("/{addressId}")
-    public ResponseEntity<RestaurantAddressResponse> getRestaurantAddressById(
-            @PathVariable Long addressId
-    ) {
-        log.info("Received request to get restaurant address with id: {}", addressId);
-        RestaurantAddressResponse address =
-                restaurantAddressService.getRestaurantAddressById(addressId);
-        return ResponseEntity.ok(address);
-    }
+
 
 }
