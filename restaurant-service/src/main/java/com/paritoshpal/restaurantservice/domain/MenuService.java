@@ -13,8 +13,8 @@ public interface MenuService {
     MenuResponse createMenu(Long restaurantId, CreateMenuRequest createMenuRequest);
     List<MenuSummaryResponse> getMenusByRestaurantId(Long restaurantId);
     void deleteMenuById(Long menuId);
-    MenuResponse getMenuById(Long menuId);
-    MenuResponse updateMenu(Long menuId, MenuUpdateRequest updateMenuRequest);
-    void updateAllPricesInMenu(Long menuId, BigDecimal percentageIncrease);
+    MenuResponse getMenuById(Long restaurantId, Long menuId);
+    MenuResponse updateMenu(Long restaurantId, Long menuId, MenuUpdateRequest updateMenuRequest);
+    void updateAllPricesInMenu(Long restaurantId, Long menuId, BigDecimal percentageIncrease);
 
 }

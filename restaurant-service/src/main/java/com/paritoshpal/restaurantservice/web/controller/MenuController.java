@@ -43,7 +43,7 @@ public class MenuController {
             @PathVariable Long id
     ) {
         log.info("Received request to get menu with id: {}", id);
-        MenuResponse menu = menuService.getMenuById(id);
+        MenuResponse menu = menuService.getMenuById(restaurantId,id);
         return ResponseEntity.ok(menu);
     }
 
@@ -64,7 +64,7 @@ public class MenuController {
     ) {
 
         log.info("Received request to update menu with id: {}", id);
-        MenuResponse updatedMenu = menuService.updateMenu(id, request);
+        MenuResponse updatedMenu = menuService.updateMenu(restaurantId,id, request);
         log.info("Updated menu with id: {}", updatedMenu.id());
         return ResponseEntity.ok(updatedMenu);
     }
@@ -76,7 +76,7 @@ public class MenuController {
             @RequestParam BigDecimal percentage
             ){
         log.info("Received request to update menu prices for menuId: {} with percentage: {}", id, percentage);
-        menuService.updateAllPricesInMenu(id, percentage);
+        menuService.updateAllPricesInMenu(restaurantId,id, percentage);
         log.info("Updated menu prices for menuId: {} with percentage: {}", id, percentage);
         return ResponseEntity.noContent().build();
     }

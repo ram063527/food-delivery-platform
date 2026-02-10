@@ -140,6 +140,32 @@ class MenuControllerTest extends AbstractIT {
                             "Menu name cannot be empty"
                     ));
         }
+
+
+
+        @Test
+        void shouldReturnNotFoundForNonExistingRestaurant() {
+            Long restaurantId = 999L; // Non-existent restaurant
+            var payload = """
+                {
+                  "name": "BRUNCH",
+                  "description": "Brunch menu with beautiful chicken"
+                }
+                """;
+
+            RestAssured.given()
+                    .contentType(ContentType.JSON)
+                    .body(payload)
+                    .when()
+                    .post("/api/restaurants/{restaurantId}/menus", restaurantId)
+                    .then()
+                    .statusCode(404)
+                    .body("detail", is("Restaurant with ID " + restaurantId + " not found."));
+        }
+
+
+
+
     }
 
     @Nested
@@ -149,7 +175,7 @@ class MenuControllerTest extends AbstractIT {
         void shouldUpdateMenuSuccessfully() {
 
             var menuId = 1L;
-            Long restaurantId = 251L;
+            Long restaurantId = 1L;
 
             var payload = """
                     {
@@ -174,7 +200,7 @@ class MenuControllerTest extends AbstractIT {
         @Test
         void shouldUpdateAllMenuItemPricesSuccessfully() {
             Long menuId = 1L;
-            Long restaurantId = 251L;
+            Long restaurantId = 1L;
             BigDecimal percentage = new  BigDecimal("10.0");
 
             RestAssured.given()
@@ -198,7 +224,7 @@ class MenuControllerTest extends AbstractIT {
         @Test
         void shouldReturnNotFoundForNonExistingMenu() {
             var menuId = 999L;
-            Long restaurantId = 251L;
+            Long restaurantId = 1L;
             BigDecimal percentage = new  BigDecimal("10.0");
 
 
@@ -217,8 +243,31 @@ class MenuControllerTest extends AbstractIT {
                     .put("api/restaurants/{restaurantId}/menus/{id}?percentage={percentage}",restaurantId,menuId,percentage)
                     .then()
                     .statusCode(404)
-                    .body("detail", is("Menu with id " + menuId + " not found."));
+                    .body("detail", is("Menu with id " + menuId + " not found for restaurant with id " + restaurantId + "."));
 
+        }
+
+
+        @Test
+        void shouldReturnNotFoundWhenUpdatingNonExistingMenu() {
+            Long restaurantId = 1L;
+            Long menuId = 999L; // Non-existent menu
+
+            var payload = """
+                {
+                  "name": "Updated Menu Name",
+                  "description": "Updated description for the menu."
+                }
+                """;
+
+            RestAssured.given()
+                    .contentType(ContentType.JSON)
+                    .body(payload)
+                    .when()
+                    .put("/api/restaurants/{restaurantId}/menus/{id}", restaurantId, menuId)
+                    .then()
+                    .statusCode(404)
+                    .body("detail", is("Menu with id " + menuId + " not found for restaurant with id " + restaurantId + "."));
         }
     }
 
@@ -227,8 +276,8 @@ class MenuControllerTest extends AbstractIT {
 
         @Test
         void shouldDeleteMenuSuccessfully() {
-            Long restaurantId = 251L;
-            var menuId = 51L;
+            Long restaurantId = 51L;
+            var menuId = 201L;
 
             RestAssured.given()
                     .when()
@@ -240,13 +289,26 @@ class MenuControllerTest extends AbstractIT {
 
             RestAssured.given()
                     .when()
-                    .get("/api/restaurants/{restaurantId}/menus/{id}", restaurantId,menuId)
+                    .get("/api/restaurants/{restaurantId}/menus/{id}", restaurantId, menuId)
+                    .then()
+                    .statusCode(404)
+                    .body("detail", is("Menu with id " + menuId + " not found for restaurant with id " + restaurantId + "."));
+        }
+
+        @Test
+        void shouldReturnNotFoundWhenDeletingNonExistingMenu() {
+            Long restaurantId = 1L;
+            Long menuId = 999L; // Non-existent menu
+
+            RestAssured.given()
+                    .when()
+                    .delete("/api/restaurants/{restaurantId}/menus/{id}", restaurantId, menuId)
                     .then()
                     .statusCode(404)
                     .body("detail", is("Menu with id " + menuId + " not found."));
-
-
         }
+
+
     }
 
     @Nested
@@ -254,7 +316,7 @@ class MenuControllerTest extends AbstractIT {
 
         @Test
         void shouldGetMenuByIdSuccessfully() {
-            Long restaurantId = 251L;
+            Long restaurantId = 1L;
             var menuId = 1L;
 
             RestAssured.given()
@@ -270,7 +332,7 @@ class MenuControllerTest extends AbstractIT {
 
         @Test
         void shouldReturnNotFoundForNonExistingMenu() {
-            Long restaurantId = 251L;
+            Long restaurantId = 1L;
             var menuId = 999L;
 
             RestAssured.given()
@@ -278,20 +340,20 @@ class MenuControllerTest extends AbstractIT {
                     .get("/api/restaurants/{restaurantId}/menus/{id}",restaurantId, menuId)
                     .then()
                     .statusCode(404)
-                    .body("detail", is("Menu with id " + menuId + " not found."));
+                    .body("detail", is("Menu with id " + menuId + " not found for restaurant with id " + restaurantId + "."));
         }
 
         @Test
         void shouldGetMenusByRestaurantIdSuccessfully() {
-            var restaurantId = 51L;
+            var restaurantId = 1L;
 
             RestAssured.given()
                     .when()
                     .get("/api/restaurants/{restaurantId}/menus", restaurantId)
                     .then()
                     .statusCode(200)
-                    .body("size()", is(2))
-                    .body("name", containsInAnyOrder("Main Menu", "Brunch"));
+                    .body("size()", is(3))
+                    .body("name", containsInAnyOrder("Main Menu", "Breakfast","Drinks"));
         }
 
         @Test

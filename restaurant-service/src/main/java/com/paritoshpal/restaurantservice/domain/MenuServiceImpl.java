@@ -75,26 +75,26 @@ public class MenuServiceImpl implements MenuService{
     }
 
     @Override
-    public MenuResponse getMenuById(Long menuId) {
+    public MenuResponse getMenuById(Long restaurantId, Long menuId) {
         // 1. Fetch menu by ID
-        MenuEntity menuEntity = menuRepository.findById(menuId)
-                .orElseThrow(() -> MenuNotFoundException.forId(menuId));
+        MenuEntity menuEntity = menuRepository.findByIdAndRestaurantId(menuId, restaurantId)
+                .orElseThrow(() -> MenuNotFoundException.forRestaurant(restaurantId, menuId));
         // 2. Map to response
         return menuMapper.toMenuResponse(menuEntity);
     }
 
     @Override
-    public MenuResponse updateMenu(Long menuId, MenuUpdateRequest updateMenuRequest) {
-        MenuEntity menu = menuRepository.findById(menuId)
-                .orElseThrow(()-> MenuNotFoundException.forId(menuId));
+    public MenuResponse updateMenu(Long restaurantId, Long menuId, MenuUpdateRequest updateMenuRequest) {
+        MenuEntity menu = menuRepository.findByIdAndRestaurantId(menuId, restaurantId)
+                .orElseThrow(() -> MenuNotFoundException.forRestaurant(restaurantId, menuId));
         menuMapper.updateMenuEntityFromRequest(updateMenuRequest, menu);
         return menuMapper.toMenuResponse(menuRepository.save(menu));
     }
 
     @Override
-    public void updateAllPricesInMenu(Long menuId, BigDecimal percentageIncrease) {
-        MenuEntity menu = menuRepository.findById(menuId)
-                .orElseThrow(()-> MenuNotFoundException.forId(menuId));
+    public void updateAllPricesInMenu(Long restaurantId, Long menuId, BigDecimal percentageIncrease) {
+        MenuEntity menu = menuRepository.findByIdAndRestaurantId(menuId, restaurantId)
+                .orElseThrow(() -> MenuNotFoundException.forRestaurant(restaurantId, menuId));
 
         BigDecimal multiplier  = BigDecimal.ONE.add(percentageIncrease.divide(BigDecimal.valueOf(100),2, RoundingMode.HALF_UP));
 
