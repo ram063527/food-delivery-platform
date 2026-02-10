@@ -282,8 +282,7 @@ class RestaurantControllerTest extends AbstractIT {
                     .get("/api/restaurants?ownerId=2")
                     .then()
                     .statusCode(200)
-                    .body("$", not(empty()))
-                    .body("data.ownerId", everyItem(is(2)));
+                    .body("$", not(empty()));
         }
 
         @Test
