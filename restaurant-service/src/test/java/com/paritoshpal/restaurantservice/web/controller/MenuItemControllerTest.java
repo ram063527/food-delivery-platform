@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.test.context.jdbc.Sql;
 
 import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 @Sql("/test-data.sql")
 class MenuItemControllerTest extends AbstractIT {
@@ -18,9 +17,12 @@ class MenuItemControllerTest extends AbstractIT {
 
         @Test
         void shouldCreateMenuItemSuccessfully() {
+            Long restaurantId = 201L; // Sweet Treats
+            Long menuId = 351L; // Dessert Menu
+
             var payload = """
                     {
-                      "menuId": 351,
+                 
                       "name": "Grilled Chicken Burger",
                       "description": "Grilled chicken breast with lettuce, tomato and garlic mayo in a brioche bun.",
                       "price": 10.50,
@@ -36,7 +38,7 @@ class MenuItemControllerTest extends AbstractIT {
                     .contentType(ContentType.JSON)
                     .body(payload)
                     .when()
-                    .post("/api/menu-items")
+                    .post("/api/restaurants/{restaurantId}/menus/{menuId}/items", restaurantId, menuId)
                     .then()
                     .statusCode(201)
                     .body("id",notNullValue())
@@ -52,9 +54,13 @@ class MenuItemControllerTest extends AbstractIT {
 
         @Test
         void shouldReturnBadRequestWhenPayloadIsInvalid() {
+
+            Long restaurantId = 201L;
+            Long menuId = 351L;
+
             var payload = """
                     {
-                      "menuId": 351,
+                   
                       "name": "",
                       "description": "Grilled chicken breast with lettuce, tomato and garlic mayo in a brioche bun.",
                       "price": 10.50,
@@ -70,10 +76,64 @@ class MenuItemControllerTest extends AbstractIT {
                     .contentType(ContentType.JSON)
                     .body(payload)
                     .when()
-                    .post("/api/menu-items")
+                    .post("/api/restaurants/{restaurantId}/menus/{menuId}/items", restaurantId, menuId)
                     .then()
                     .statusCode(400);
         }
+        @Test
+        void shouldReturnNotFoundWhenMenuDoesNotExist() {
+            Long restaurantId = 1L;
+            Long menuId = 999L; // Non-existent menu
+
+            var payload = """
+                    {
+                      "name": "Grilled Chicken Burger",
+                      "description": "Delicious burger",
+                      "price": 10.50,
+                      "category": "MAIN_COURSE",
+                      "availability": true,
+                      "imageUrl": "https://example.com/images/burger.jpg",
+                      "dietaryInfo": "NONE"
+                    }
+                    """;
+
+            RestAssured.given()
+                    .contentType(ContentType.JSON)
+                    .body(payload)
+                    .when()
+                    .post("/api/restaurants/{restaurantId}/menus/{menuId}/items", restaurantId, menuId)
+                    .then()
+                    .statusCode(404)
+                    .body("detail", containsString("Menu with id " + menuId + " not found"));
+        }
+
+        @Test
+        void shouldReturnNotFoundWhenRestaurantDoesNotExist() {
+            Long restaurantId = 999L; // Non-existent restaurant
+            Long menuId = 1L;
+
+            var payload = """
+                    {
+                      "name": "Grilled Chicken Burger",
+                      "description": "Delicious burger",
+                      "price": 10.50,
+                      "category": "MAIN_COURSE",
+                      "availability": true,
+                      "imageUrl": "https://example.com/images/burger.jpg",
+                      "dietaryInfo": "NONE"
+                    }
+                    """;
+
+            RestAssured.given()
+                    .contentType(ContentType.JSON)
+                    .body(payload)
+                    .when()
+                    .post("/api/restaurants/{restaurantId}/menus/{menuId}/items", restaurantId, menuId)
+                    .then()
+                    .statusCode(404)
+                    .body("detail", containsString("restaurant"));
+        }
+
     }
 
     @Nested
@@ -82,6 +142,11 @@ class MenuItemControllerTest extends AbstractIT {
 
         @Test
         void shouldUpdateMenuItemSuccessfully() {
+
+            Long restaurantId = 1L; // Spice Hub
+            Long menuId = 1L; // Main Menu
+            Long itemId = 1L; // Butter Chicken
+
             var payload = """
                     {
                       "name": "Updated Grilled Chicken Burger",
@@ -99,7 +164,7 @@ class MenuItemControllerTest extends AbstractIT {
                     .contentType(ContentType.JSON)
                     .body(payload)
                     .when()
-                    .put("/api/menu-items/1")
+                    .put("/api/restaurants/{restaurantId}/menus/{menuId}/items/{id}", restaurantId, menuId, itemId)
                     .then()
                     .statusCode(200)
                     .body("id",equalTo(1))
@@ -114,20 +179,52 @@ class MenuItemControllerTest extends AbstractIT {
 
         @Test
         void shouldUpdateAvailabilitySuccessfully() {
+            Long restaurantId = 1L; // Spice Hub
+            Long menuId = 1L; // Main Menu
+            Long itemId = 1L; // Butter Chicken
+
             RestAssured.given()
                     .when()
-                    .patch("/api/menu-items/1/availability?available=false")
+                    .patch("/api/restaurants/{restaurantId}/menus/{menuId}/items/{id}/availability?available=false",
+                            restaurantId, menuId, itemId)
                     .then()
                     .statusCode(204);
 
             // Verify that availability is updated
             RestAssured.given()
                     .when()
-                    .get("/api/menu-items/1")
+                    .get("/api/restaurants/{restaurantId}/menus/{menuId}/items/{id}", restaurantId, menuId, itemId)
                     .then()
                     .statusCode(200)
                     .body("availability",equalTo(false));
 
+        }
+        @Test
+        void shouldReturnNotFoundWhenUpdatingNonExistentMenuItem() {
+            Long restaurantId = 1L;
+            Long menuId = 1L;
+            Long itemId = 999L; // Non-existent item
+
+            var payload = """
+                    {
+                      "name": "Updated Item",
+                      "description": "Updated description",
+                      "price": 15.00,
+                      "category": "MAIN_COURSE",
+                      "availability": true,
+                      "imageUrl": "https://example.com/images/item.jpg",
+                      "dietaryInfo": "NONE"
+                    }
+                    """;
+
+            RestAssured.given()
+                    .contentType(ContentType.JSON)
+                    .body(payload)
+                    .when()
+                    .put("/api/restaurants/{restaurantId}/menus/{menuId}/items/{id}", restaurantId, menuId, itemId)
+                    .then()
+                    .statusCode(404)
+                    .body("detail", containsString("Menu item with id " + itemId + " not found"));
         }
 
     }
@@ -137,19 +234,38 @@ class MenuItemControllerTest extends AbstractIT {
 
         @Test
         void shouldDeleteMenuItemSuccessfully() {
+            Long restaurantId = 1L; // Spice Hub
+            Long menuId = 1L; // Main Menu
+            Long itemId = 51L; //Paneer tikkka
+
             RestAssured.given()
                     .when()
-                    .delete("/api/menu-items/1")
+                    .delete("/api/restaurants/{restaurantId}/menus/{menuId}/items/{id}", restaurantId, menuId, itemId)
                     .then()
                     .statusCode(204);
 
             // Verify that menu item is deleted
             RestAssured.given()
                     .when()
-                    .get("/api/menu-items/1")
+                    .get("/api/restaurants/{restaurantId}/menus/{menuId}/items/{id}", restaurantId, menuId, itemId)
                     .then()
                     .statusCode(404);
         }
+
+        @Test
+        void shouldReturnNotFoundWhenDeletingNonExistentMenuItem() {
+            Long restaurantId = 1L;
+            Long menuId = 1L;
+            Long itemId = 999L; // Non-existent item
+
+            RestAssured.given()
+                    .when()
+                    .delete("/api/restaurants/{restaurantId}/menus/{menuId}/items/{id}", restaurantId, menuId, itemId)
+                    .then()
+                    .statusCode(404)
+                    .body("detail", containsString("Menu item with id " + itemId + " not found"));
+        }
+
 
 
     }
@@ -159,9 +275,14 @@ class MenuItemControllerTest extends AbstractIT {
 
         @Test
         void shouldGetMenuItemByIdSuccessfully() {
+
+            Long restaurantId = 1L; // Spice Hub
+            Long menuId = 1L; // Main Menu
+            Long itemId = 1L; // Butter Chicken
+
             RestAssured.given()
                     .when()
-                    .get("/api/menu-items/1")
+                    .get("/api/restaurants/{restaurantId}/menus/{menuId}/items/{id}", restaurantId, menuId, itemId)
                     .then()
                     .statusCode(200)
                     .body("id",equalTo(1))
@@ -178,28 +299,40 @@ class MenuItemControllerTest extends AbstractIT {
 
         @Test
         void shouldReturnNotFoundWhenMenuItemDoesNotExist() {
+
+            Long restaurantId = 1L;
+            Long menuId = 1L;
+            Long itemId = 999L; // Non-existent item
+
             RestAssured.given()
                     .when()
-                    .get("/api/menu-items/999")
+                    .get("/api/restaurants/{restaurantId}/menus/{menuId}/items/{id}", restaurantId, menuId, itemId)
                     .then()
-                    .statusCode(404);
+                    .statusCode(404)
+                    .body("detail", containsString("Menu item with id " + itemId + " not found"));
         }
 
 
         @Test
         void shouldReturnBadRequestWhenMenuItemIdIsInvalid() {
+            Long restaurantId = 1L;
+            Long menuId = 1L;
+
             RestAssured.given()
                     .when()
-                    .get("/api/menu-items/abc")
+                    .get("/api/restaurants/{restaurantId}/menus/{menuId}/items/{id}", restaurantId, menuId, "abc")
                     .then()
                     .statusCode(400);
         }
 
         @Test
         void shouldGetMenuItemsByMenuIdSuccessfully() {
+            Long restaurantId = 201L; // Sweet Treats
+            Long menuId = 351L; // Dessert Menu with 4 items
+
             RestAssured.given()
                     .when()
-                    .get("/api/menu-items/menu/351")
+                    .get("/api/restaurants/{restaurantId}/menus/{menuId}/items", restaurantId, menuId)
                     .then()
                     .statusCode(200)
                     .body("$",hasSize(4));
@@ -207,9 +340,12 @@ class MenuItemControllerTest extends AbstractIT {
 
         @Test
         void shouldGetMenuItemsByCategorySuccessfully() {
+            Long restaurantId = 201L; // Sweet Treats
+            Long menuId = 351L; // Dessert Menu
+
             RestAssured.given()
                     .when()
-                    .get("/api/menu-items/menu/351/category/DESSERT")
+                    .get("/api/restaurants/{restaurantId}/menus/{menuId}/items", restaurantId, menuId)
                     .then()
                     .statusCode(200)
                     .body("$",hasSize(4));
@@ -217,42 +353,45 @@ class MenuItemControllerTest extends AbstractIT {
 
         @Test
         void shouldReturnEmptyListWhenNoMenuItemsForMenuId() {
+            Long restaurantId = 201L; // Sweet Treats
+            Long menuId = 351L; // Dessert Menu
             RestAssured.given()
+                    .queryParam("category", "APPETIZER")
                     .when()
-                    .get("/api/menu-items/menu/999")
+                    .get("/api/restaurants/{restaurantId}/menus/{menuId}/items", restaurantId, menuId)
                     .then()
                     .statusCode(200)
-                    .body("$",hasSize(0));
+                    .body("$", hasSize(0));
         }
 
-         @Test
-        void shouldReturnEmptyListWhenNoMenuItemsForCategory() {
+
+        @Test
+        void shouldReturnNotFoundWhenMenuDoesNotExist() {
+            Long restaurantId = 1L;
+            Long menuId = 999L; // Non-existent menu
+
             RestAssured.given()
                     .when()
-                    .get("/api/menu-items/menu/351/category/APPETIZER")
+                    .get("/api/restaurants/{restaurantId}/menus/{menuId}/items", restaurantId, menuId)
+                    .then()
+                    .statusCode(404)
+                    .body("detail", containsString("Menu with id " + menuId + " not found"));
+        }
+
+        @Test
+        void shouldGetMainCourseItemsSuccessfully() {
+            Long restaurantId = 1L; // Spice Hub
+            Long menuId = 1L; // Main Menu
+
+            RestAssured.given()
+                    .queryParam("category", "MAIN_COURSE")
+                    .when()
+                    .get("/api/restaurants/{restaurantId}/menus/{menuId}/items", restaurantId, menuId)
                     .then()
                     .statusCode(200)
-                    .body("$",hasSize(0));
-         }
-
-
-         @Test
-        void shouldReturnBadRequestWhenCategoryIsInvalid() {
-            RestAssured.given()
-                    .when()
-                    .get("/api/menu-items/menu/351/category/INVALID_CATEGORY")
-                    .then()
-                    .statusCode(400);
-         }
-
-         @Test
-        void shouldReturnNotFoundWhenMenuIdIsInvalid() {
-            RestAssured.given()
-                    .when()
-                    .get("/api/menu-items/menu/abc")
-                    .then()
-                    .statusCode(400);
-         }
+                    .body("$", hasSize(greaterThan(0)))
+                    .body("[0].category", equalTo("MAIN_COURSE"));
+        }
 
 
     }

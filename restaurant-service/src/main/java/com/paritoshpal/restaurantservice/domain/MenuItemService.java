@@ -8,18 +8,46 @@ import java.util.List;
 
 public interface MenuItemService {
 
-    MenuItemResponse createMenuItem(CreateMenuItemRequest request);
+    MenuItemResponse createMenuItem(
+            Long restaurantId,
+            Long menuId,
+            CreateMenuItemRequest request);
 
-    MenuItemResponse getMenuItemById(Long menuItemId);
+    MenuItemResponse getMenuItemById(
+            Long restaurantId,
+            Long menuId,
+            Long menuItemId
+    );
 
-    MenuItemResponse updateMenuItem(Long menuItemId, MenuItemUpdateRequest request);
+    MenuItemResponse updateMenuItem(
+            Long restaurantId,
+            Long menuId,
+            Long id,
+            MenuItemUpdateRequest request
+    );
 
-    void deleteMenuItem(Long menuItemId);
+    void deleteMenuItem(
+            Long restaurantId,
+            Long menuId,
+            Long id
+    );
 
-    List<MenuItemResponse> getMenuItemsByMenuId(Long menuId);
+    void updateAvailability(
+            Long restaurantId,
+            Long menuId,
+            Long id,
+            boolean available);
 
-    List<MenuItemResponse> getMenuItemsByCategory(Long menuId, MenuCategory category);
 
-    void updateAvailability(Long menuItemId, boolean available);
+    List<MenuItemResponse> getMenuItemsByMenuId(
+            Long restaurantId,
+            Long id
+    );
+
+    List<MenuItemResponse> getMenuItemsByCategory(
+            Long restaurantId,
+            Long menuId,
+            MenuCategory category);
+
 
 }

@@ -9,8 +9,7 @@ import jakarta.validation.constraints.Positive;
 import java.math.BigDecimal;
 
 public record CreateMenuItemRequest(
-        @NotNull(message = "Menu ID cannot be null")
-        Long menuId,
+
         @NotEmpty(message = "Name cannot be empty")
         String name,
         String description,

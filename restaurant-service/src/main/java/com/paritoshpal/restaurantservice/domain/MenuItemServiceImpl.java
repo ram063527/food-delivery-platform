@@ -23,10 +23,13 @@ public class MenuItemServiceImpl implements  MenuItemService {
 
 
     @Override
-    public MenuItemResponse createMenuItem(CreateMenuItemRequest request) {
-        // 1. Validate menu exists
-        MenuEntity menu = menuRepository.findById(request.menuId())
-                .orElseThrow(() -> MenuNotFoundException.forId(request.menuId()));
+    public MenuItemResponse createMenuItem(
+            Long restaurantId,
+            Long menuId,
+            CreateMenuItemRequest request) {
+        // 1. Validate menu exists for the given restaurant
+        MenuEntity menu = menuRepository.findByIdAndRestaurantId(menuId, restaurantId)
+                .orElseThrow(() -> MenuNotFoundException.forRestaurant(restaurantId, menuId));
         // 2. Map request to entity
         MenuItemEntity menuItem = menuItemMapper.toMenuItemEntity(request);
         menuItem.setMenu(menu);
@@ -37,18 +40,36 @@ public class MenuItemServiceImpl implements  MenuItemService {
     }
 
     @Override
-    public MenuItemResponse getMenuItemById(Long menuItemId) {
-        return menuItemRepository.findById(menuItemId)
-                .map(menuItemMapper::toMenuItemResponse)
-                .orElseThrow(() -> MenuItemNotFoundException.forId(menuItemId));
+    public MenuItemResponse getMenuItemById(
+            Long restaurantId,
+            Long menuId,
+            Long id
+    ) {
+        // 1. Validate menu exists for the given restaurant
+        if(!menuRepository.existsByIdAndRestaurantId(menuId, restaurantId)){
+            throw MenuNotFoundException.forRestaurant(restaurantId, menuId);
+        }
+        // 2. Fetch menu item by id and menu id
+        MenuItemEntity menuItem = menuItemRepository.findByIdAndMenu_Id(id, menuId)
+                .orElseThrow(() -> MenuItemNotFoundException.forId(id));
+        // 3. Map entity to response
+        return menuItemMapper.toMenuItemResponse(menuItem);
     }
 
     @Override
-    public MenuItemResponse updateMenuItem(Long menuItemId, MenuItemUpdateRequest request) {
-        // 1. Fetch the existing menuItem
-        MenuItemEntity existingMenuItem = menuItemRepository.findById(menuItemId)
-                .orElseThrow(() -> MenuNotFoundException.forId(menuItemId));
-        // 2. Update fields from request
+    public MenuItemResponse updateMenuItem(
+            Long restaurantId,
+            Long menuId,
+            Long id,
+            MenuItemUpdateRequest request) {
+        // 1. Validate menu exists for the given restaurant
+        if(!menuRepository.existsByIdAndRestaurantId(menuId, restaurantId)){
+            throw MenuNotFoundException.forRestaurant(restaurantId, menuId);
+        }
+        // 2a. Fetch existing menu item
+        MenuItemEntity existingMenuItem = menuItemRepository.findByIdAndMenu_Id(id, menuId)
+                .orElseThrow(() -> MenuItemNotFoundException.forId(id));
+        // 2b. Update fields from request
         menuItemMapper.updateMenuItemFromRequest(request, existingMenuItem);
         // 3. Save updated menu item
         MenuItemEntity updatedMenuItem = menuItemRepository.save(existingMenuItem);
@@ -57,31 +78,77 @@ public class MenuItemServiceImpl implements  MenuItemService {
     }
 
     @Override
-    public void deleteMenuItem(Long menuItemId) {
-        if(!menuItemRepository.existsById(menuItemId)){
-            throw MenuItemNotFoundException.forId(menuItemId);
+    public void deleteMenuItem(
+            Long restaurantId,
+            Long menuId,
+            Long id) {
+            // 1. Validate menu exists for the given restaurant
+        if(!menuRepository.existsByIdAndRestaurantId(menuId, restaurantId)){
+            throw MenuNotFoundException.forRestaurant(restaurantId, menuId);
         }
-        menuItemRepository.deleteById(menuItemId);
+        // 2. Validate menu item exists for the given menu
+        MenuItemEntity menuItem = menuItemRepository.findByIdAndMenu_Id(id, menuId)
+                .orElseThrow(() -> MenuItemNotFoundException.forId(id));
+        // 3. Delete menu item
+        menuItemRepository.delete(menuItem);
     }
 
     @Override
-    public List<MenuItemResponse> getMenuItemsByMenuId(Long menuId) {
-        return menuItemRepository.findByMenuId(menuId).stream()
-                .map(menuItemMapper::toMenuItemResponse)
-                .toList();
-    }
-
-    @Override
-    public List<MenuItemResponse> getMenuItemsByCategory(Long menuId, MenuCategory category) {
-       return menuItemRepository.findByMenu_IdAndCategory(menuId,category).
-                stream().map(menuItemMapper::toMenuItemResponse).toList();
-    }
-
-    @Override
-    public void updateAvailability(Long menuItemId, boolean available) {
-        MenuItemEntity menuItem = menuItemRepository.findById(menuItemId)
-                .orElseThrow(() -> MenuItemNotFoundException.forId(menuItemId));
+    public void updateAvailability(
+            Long restaurantId,
+            Long menuId,
+            Long id,
+            boolean available
+    ) {
+        // 1. Validate menu exists for the given restaurant
+        if(!menuRepository.existsByIdAndRestaurantId(menuId, restaurantId)){
+            throw MenuNotFoundException.forRestaurant(restaurantId, menuId);
+        }
+        // 2. Fetch menu item by id and menu id
+        MenuItemEntity menuItem = menuItemRepository.findByIdAndMenu_Id(id, menuId)
+                .orElseThrow(() -> MenuItemNotFoundException.forId(id));
+        // 3. Update availability
         menuItem.setAvailability(available);
+        // 4. Save updated menu item
         menuItemRepository.save(menuItem);
     }
+
+    @Override
+    public List<MenuItemResponse> getMenuItemsByMenuId(
+            Long restaurantId,
+            Long menuId
+    ) {
+        // 1. Validate menu exists for the given restaurant
+        if(!menuRepository.existsByIdAndRestaurantId(menuId, restaurantId)){
+            throw MenuNotFoundException.forRestaurant(restaurantId, menuId);
+        }
+        // 2. Fetch menu items by menu id
+        return menuItemRepository.findByMenuId(menuId)
+                .stream().map(menuItemMapper::toMenuItemResponse).toList();
+
+    }
+
+    @Override
+    public List<MenuItemResponse> getMenuItemsByCategory(
+            Long restaurantId,
+            Long menuId,
+            MenuCategory category) {
+        // 1. Validate menu exists for the given restaurant
+        if(!menuRepository.existsByIdAndRestaurantId(menuId, restaurantId)) {
+            throw MenuNotFoundException.forRestaurant(restaurantId, menuId);
+        }
+        // 2. Fetch menu items by menu id and category
+        return menuItemRepository.findByMenu_IdAndCategory(menuId, category)
+                .stream().map(menuItemMapper::toMenuItemResponse).toList();
+
+
+    }
+
+    private boolean validateMenuBelongsToRestaurant(Long restaurantId, Long menuId) {
+        return menuRepository.existsByIdAndRestaurantId(menuId, restaurantId);
+    }
+
+
+
+
 }
