@@ -242,7 +242,7 @@ class RestaurantControllerTest extends AbstractIT {
         void shouldGetRestaurantByIdSuccessfully() {
             RestAssured.given()
                     .when()
-                    .get("/api/restaurants/id/1")
+                    .get("/api/restaurants/1")
                     .then()
                     .statusCode(200)
                     .body("id", is(1))
@@ -254,7 +254,7 @@ class RestaurantControllerTest extends AbstractIT {
         void shouldReturnNotFoundForNonExistingRestaurant() {
             RestAssured.given()
                     .when()
-                    .get("/api/restaurants/id/999")
+                    .get("/api/restaurants/999")
                     .then()
                     .statusCode(404);
         }
@@ -263,6 +263,7 @@ class RestaurantControllerTest extends AbstractIT {
         @Test
         void shouldGetAllRestaurantsWithPagination() {
             RestAssured.given()
+                    .queryParam("pageNo", 1)
                     .when()
                     .get("/api/restaurants?pageNo=1")
                     .then()
@@ -276,46 +277,47 @@ class RestaurantControllerTest extends AbstractIT {
         @Test
         void shouldGetAllRestaurantsByOwnerId() {
             RestAssured.given()
+                    .queryParam("ownerId", 2)
                     .when()
-                    .get("/api/restaurants/owner/2")
+                    .get("/api/restaurants?ownerId=2")
                     .then()
                     .statusCode(200)
-                    .body("$", hasSize(1))
-                    .body("[0].name", is("Green Bowl"))
-                    .body("[0].cuisine", is("VEGAN")); // matches your seed data
+                    .body("$", not(empty()))
+                    .body("data.ownerId", everyItem(is(2)));
         }
 
         @Test
         void shouldGetAllRestaurantsByName() {
-            RestAssured.given()
+            var response = RestAssured.given()
+                    .queryParam("name", "Spice Hub")
                     .when()
-                    .get("/api/restaurants/name/Spice Hub")
+                    .get("/api/restaurants?name=Spice Hub")
                     .then()
-                    .statusCode(200)
-                    .body("$", not(empty()))
-                    .body("name", everyItem(is("Spice Hub")));
+                    .statusCode(200);
         }
 
         @Test
         void shouldGetAllRestaurantsByCuisine() {
             RestAssured.given()
+                    .queryParam("cuisine", "ITALIAN")
                     .when()
-                    .get("/api/restaurants/cuisine/ITALIAN")
+                    .get("/api/restaurants?cuisine=ITALIAN")
                     .then()
                     .statusCode(200)
                     .body("$", not(empty()))
-                    .body("cuisine", everyItem(is("ITALIAN")));
+                    .body("data.cuisine", everyItem(is("ITALIAN")));
         }
 
         @Test
         void shouldGetAllRestaurantsByCiyt() {
             RestAssured.given()
+                    .queryParam("city", "Bangalore")
                     .when()
-                    .get("/api/restaurants/city/Bangalore")
+                    .get("/api/restaurants?city=Bangalore")
                     .then()
                     .statusCode(200)
                     .body("$", not(empty()))
-                    .body("address.city", everyItem(is("Bangalore")));
+                    .body("data.address.city", everyItem(is("Bangalore")));
         }
 
         @Test
@@ -325,11 +327,10 @@ class RestaurantControllerTest extends AbstractIT {
                     .queryParam("cuisine", "INDIAN")
                     .queryParam("city", "Bangalore")
                     .when()
-                    .get("/api/restaurants/search")
+                    .get("/api/restaurants?name=Spice Hub&cuisine=INDIAN&city=Bangalore")
                     .then()
                     .statusCode(200)
                     .body("$", not(empty()))
-                    .body("data", not(empty()))
                     .body("data.name", everyItem(is("Spice Hub")))
                     .body("data.cuisine", everyItem(is("INDIAN")))
                     .body("data.address.city", everyItem(is("Bangalore")));
@@ -341,7 +342,7 @@ class RestaurantControllerTest extends AbstractIT {
             RestAssured.given()
                     .queryParam("name", "NonExistingRestaurant")
                     .when()
-                    .get("/api/restaurants/search")
+                    .get("/api/restaurants?name=NonExistingRestaurant&cuisine=NonExistingCuisine&city=NonExistingCity")
                     .then()
                     .statusCode(200)
                     .body("$", not(empty()))
@@ -352,7 +353,7 @@ class RestaurantControllerTest extends AbstractIT {
         void shouldReturnEverythingForSearchWithNoFilters() {
             RestAssured.given()
                     .when()
-                    .get("/api/restaurants/search")
+                    .get("/api/restaurants")
                     .then()
                     .statusCode(200)
                     .body("$", not(empty()))

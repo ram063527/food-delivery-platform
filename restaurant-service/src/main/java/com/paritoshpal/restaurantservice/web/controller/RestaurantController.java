@@ -32,91 +32,56 @@ public class RestaurantController {
         return ResponseEntity.status(HttpStatus.CREATED).body(createdRestaurant);
     }
 
-    @PutMapping("/{restaurantId}")
+    @PutMapping("/{id}")
     public ResponseEntity<RestaurantResponse> updateRestaurant(
-            @PathVariable Long restaurantId,
+            @PathVariable Long id,
             @RequestBody @Valid RestaurantUpdateRequest request
     ) {
-        log.info("Received request to update restaurant with ID: {}", restaurantId);
-        RestaurantResponse updatedRestaurant = restaurantService.updateRestaurant(restaurantId, request);
-        log.info("Updated restaurant with ID: {}", restaurantId);
+        log.info("Received request to update restaurant with ID: {}", id);
+        RestaurantResponse updatedRestaurant = restaurantService.updateRestaurant(id, request);
+        log.info("Updated restaurant with ID: {}", id);
         return ResponseEntity.ok(updatedRestaurant);
     }
 
-    @PatchMapping("/{restaurantId}/status")
+    @PatchMapping("/{id}/status")
     public ResponseEntity<RestaurantResponse> updateRestaurantStatus(
-            @PathVariable Long restaurantId,
+            @PathVariable Long id,
             @RequestParam Status status
     ) {
-        log.info("Received request to update status of restaurant with ID: {} to {}", restaurantId, status);
-        RestaurantResponse updated = restaurantService.updateRestaurantStatus(restaurantId, status);
-        log.info("Updated restaurant status for ID: {} to {}", restaurantId, status);
+        log.info("Received request to update status of restaurant with ID: {} to {}", id, status);
+        RestaurantResponse updated = restaurantService.updateRestaurantStatus(id, status);
+        log.info("Updated restaurant status for ID: {} to {}", id, status);
         return ResponseEntity.ok(updated);
     }
 
-    @DeleteMapping("/{restaurantId}")
-    public ResponseEntity<Void> deleteRestaurant(@PathVariable Long restaurantId) {
-        log.info("Received request to delete restaurant with ID: {}", restaurantId);
-        restaurantService.deleteRestaurant(restaurantId);
-        log.info("Deleted restaurant with ID: {}", restaurantId);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteRestaurant(@PathVariable Long id) {
+        log.info("Received request to delete restaurant with ID: {}", id);
+        restaurantService.deleteRestaurant(id);
+        log.info("Deleted restaurant with ID: {}", id);
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/id/{restaurantId}")
-    public ResponseEntity<RestaurantDetailedResponse> getRestaurantById(@PathVariable Long restaurantId) {
-        log.info("Received request to get restaurant details for ID: {}", restaurantId);
-        RestaurantDetailedResponse restaurant = restaurantService.getRestaurantById(restaurantId);
+    @GetMapping("/{id}")
+    public ResponseEntity<RestaurantDetailedResponse> getRestaurantById(@PathVariable Long id) {
+        log.info("Received request to get restaurant details for ID: {}", id);
+        RestaurantDetailedResponse restaurant = restaurantService.getRestaurantById(id);
         return ResponseEntity.ok(restaurant);
     }
 
+
     @GetMapping
-    public ResponseEntity<PageResult<RestaurantResponse>> getAllRestaurants(
-            @RequestParam(defaultValue = "1") int pageNo
-    ) {
-        log.info("Received request to get all restaurants (page: {})", pageNo);
-        PageResult<RestaurantResponse> restaurants = restaurantService.getAllRestaurants(pageNo);
-        return ResponseEntity.ok(restaurants);
-    }
-
-    @GetMapping("/owner/{ownerId}")
-    public ResponseEntity<List<RestaurantResponse>> getRestaurantsByOwnerId(@PathVariable Long ownerId) {
-        log.info("Received request to get restaurants for owner with ID: {}", ownerId);
-        List<RestaurantResponse> restaurants = restaurantService.getRestaurantsByOwnerId(ownerId);
-        return ResponseEntity.ok(restaurants);
-    }
-
-    @GetMapping("/name/{name}")
-    public ResponseEntity<List<RestaurantResponse>> getRestaurantsByName(@PathVariable String name) {
-        log.info("Received request to get restaurants with name: {}", name);
-        List<RestaurantResponse> restaurants = restaurantService.getRestaurantsByName(name);
-        return ResponseEntity.ok(restaurants);
-    }
-
-    @GetMapping("/cuisine/{cuisine}")
-    public ResponseEntity<List<RestaurantResponse>> getRestaurantsByCuisine(@PathVariable String cuisine) {
-        log.info("Received request to get restaurants with cuisine: {}", cuisine);
-        List<RestaurantResponse> restaurants = restaurantService.getRestaurantsByCuisine(cuisine);
-        return ResponseEntity.ok(restaurants);
-    }
-
-    @GetMapping("/city/{city}")
-    public ResponseEntity<List<RestaurantResponse>> getRestaurantsByCity(@PathVariable String city) {
-        log.info("Received request to get restaurants in city: {}", city);
-        List<RestaurantResponse> restaurants = restaurantService.getRestaurantsByCity(city);
-        return ResponseEntity.ok(restaurants);
-    }
-
-    @GetMapping("/search")
-    public ResponseEntity<PageResult<RestaurantResponse>> searchRestaurants(
-            @RequestParam(required = false) String query,
+    public ResponseEntity<PageResult<RestaurantResponse>> getRestaurants(
+            @RequestParam(required = false) Long ownerId,
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String cuisine,
             @RequestParam(required = false) String city,
+            @RequestParam(required = false) String query,
             @RequestParam(defaultValue = "1") int pageNo
     ) {
-        log.info("Received search request for restaurants with filters - query: {}, name: {}, cuisine: {}, city: {}",
-                query, name, cuisine, city);
-        PageResult<RestaurantResponse> result = restaurantService.searchRestaurants(query, name, cuisine, city, pageNo);
+        log.info("Fetching restaurants with filters - owner: {}, name: {}, cuisine: {}, city: {}",
+                ownerId, name, cuisine, city);
+        PageResult<RestaurantResponse> result = restaurantService.searchRestaurants(ownerId,name,cuisine,city,query,pageNo);
         return ResponseEntity.ok(result);
     }
 

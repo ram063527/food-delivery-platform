@@ -102,59 +102,10 @@ public class RestaurantServiceImpl implements RestaurantService {
         return restaurantMapper.toRestaurantDetailedResponse(restaurantEntity);
     }
 
-    @Override
-    public PageResult<RestaurantResponse> getAllRestaurants(int pageNo) {
-        Sort sort = Sort.by("name").ascending();
-        pageNo = pageNo <= 1 ? 0 : pageNo - 1;
-        Pageable pageable = PageRequest.of(pageNo, applicationProperties.pageSize(), sort);
-        Page<RestaurantResponse> restaurantPage = restaurantRepository.findAll(pageable)
-                .map(restaurantMapper::toRestaurantResponse);
 
-        return new PageResult<>(
-                restaurantPage.getContent(),
-                (int) restaurantPage.getTotalElements(),
-                restaurantPage.getNumber() + 1,
-                restaurantPage.getTotalPages(),
-                restaurantPage.isFirst(),
-                restaurantPage.isLast(),
-                restaurantPage.hasNext(),
-                restaurantPage.hasPrevious()
-        );
-    }
 
     @Override
-    public List<RestaurantResponse> getRestaurantsByOwnerId(Long ownerId) {
-        // Later we will make call to the User Service to check if the ownerId is valid or not,
-        // For now we will just fetch the restaurants by ownerId and return the response
-
-         return restaurantRepository.findByOwnerId(ownerId).stream()
-                .map(restaurantMapper::toRestaurantResponse)
-                .toList();
-    }
-
-    @Override
-    public List<RestaurantResponse> getRestaurantsByName(String name) {
-        return restaurantRepository.findByNameIgnoreCase(name).stream()
-                .map(restaurantMapper::toRestaurantResponse)
-                .toList();
-    }
-
-    @Override
-    public List<RestaurantResponse> getRestaurantsByCuisine(String cuisine) {
-        return restaurantRepository.findByCuisineIgnoreCase(cuisine).stream()
-                .map(restaurantMapper::toRestaurantResponse)
-                .toList();
-    }
-
-    @Override
-    public List<RestaurantResponse> getRestaurantsByCity(String city) {
-        return restaurantRepository.findByAddress_CityIgnoreCase(city).stream()
-                .map(restaurantMapper::toRestaurantResponse)
-                .toList();
-    }
-
-    @Override
-    public PageResult<RestaurantResponse> searchRestaurants(String query, String name, String cuisine, String city, int pageNo) {
+    public PageResult<RestaurantResponse> searchRestaurants(Long ownerId, String name, String cuisine, String city,String query, int pageNo) {
         Sort sort = Sort.by("name").ascending();
         pageNo = pageNo <= 1 ? 0 : pageNo - 1;
         Pageable pageable = PageRequest.of(pageNo, applicationProperties.pageSize(), sort);
@@ -168,6 +119,9 @@ public class RestaurantServiceImpl implements RestaurantService {
                     cb.like(cb.lower(root.get("name")), pattern),
                     cb.like(cb.lower(root.get("description")), pattern)
             ));
+        }
+        if(ownerId != null) {
+            spec = spec.and((root,q,cb)->cb.equal(root.get("ownerId"), ownerId));
         }
         if(name != null && !name.isBlank()) {
             spec = spec.and((root,q,cb)-> cb.like(cb.lower(root.get("name")), "%" + name.toLowerCase() + "%"));

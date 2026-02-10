@@ -15,16 +15,7 @@ public interface RestaurantService {
     RestaurantDetailedResponse getRestaurantById(Long restaurantId);
 
 
-    PageResult<RestaurantResponse> getAllRestaurants(int pageNo);
-    List<RestaurantResponse> getRestaurantsByOwnerId(Long ownerId);
-
-
-    List<RestaurantResponse> getRestaurantsByName(String name);
-    List<RestaurantResponse> getRestaurantsByCuisine(String cuisine);
-    List<RestaurantResponse> getRestaurantsByCity(String city);
-
-
-    PageResult<RestaurantResponse> searchRestaurants(String query, String name, String cuisine, String city,  int pageNo);
+    PageResult<RestaurantResponse> searchRestaurants(Long ownerId, String name, String cuisine,String city,String query,int pageNo);
 
 
 }
