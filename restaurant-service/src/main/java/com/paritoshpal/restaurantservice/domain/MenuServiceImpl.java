@@ -28,10 +28,10 @@ public class MenuServiceImpl implements MenuService{
 
 
     @Override
-    public MenuResponse createMenu(CreateMenuRequest createMenuRequest) {
+    public MenuResponse createMenu(Long restaurantId, CreateMenuRequest createMenuRequest) {
         // 1. Validate restaurant exists
-        RestaurantEntity restaurant = restaurantRepository.findById(createMenuRequest.restaurantId())
-                .orElseThrow(() -> RestaurantNotFoundException.forId(createMenuRequest.restaurantId()));
+        RestaurantEntity restaurant = restaurantRepository.findById(restaurantId)
+                .orElseThrow(() -> RestaurantNotFoundException.forId(restaurantId));
 
         // 2. Map request to entity
         MenuEntity menuEntity = menuMapper.toMenuEntity(createMenuRequest);

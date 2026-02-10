@@ -17,36 +17,37 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/menus")
+@RequestMapping("/api/restaurants/{restaurantId}/menus")
 @RequiredArgsConstructor
 public class MenuController {
+
 
     private static final Logger log = LoggerFactory.getLogger(MenuController.class);
     private final MenuService menuService;
 
 
-
-
     @PostMapping
     public ResponseEntity<MenuResponse> createMenu(
+            @PathVariable Long restaurantId,
             @RequestBody @Valid CreateMenuRequest request
     ) {
-        log.info("Received request to create menu for restaurantId: {}", request.restaurantId());
-        MenuResponse createdMenu = menuService.createMenu(request);
+        log.info("Received Request for adding ");
+        MenuResponse createdMenu = menuService.createMenu(restaurantId,request);
         log.info("Created menu with id: {}", createdMenu.id());
         return ResponseEntity.status(HttpStatus.CREATED).body(createdMenu);
     }
 
-    @GetMapping("/{menuId}")
+    @GetMapping("/{id}")
     public ResponseEntity<MenuResponse> getMenuById(
-            @PathVariable Long menuId
+            @PathVariable Long restaurantId,
+            @PathVariable Long id
     ) {
-        log.info("Received request to get menu with id: {}", menuId);
-        MenuResponse menu = menuService.getMenuById(menuId);
+        log.info("Received request to get menu with id: {}", id);
+        MenuResponse menu = menuService.getMenuById(id);
         return ResponseEntity.ok(menu);
     }
 
-    @GetMapping("/restaurant/{restaurantId}")
+    @GetMapping
     public ResponseEntity<List<MenuSummaryResponse>> getMenusByRestaurantId(
             @PathVariable Long restaurantId
     ) {
@@ -55,36 +56,38 @@ public class MenuController {
         return ResponseEntity.ok(menus);
     }
 
-    @PutMapping("/{menuId}")
+    @PutMapping("/{id}")
     public ResponseEntity<MenuResponse> updateMenu(
-            @PathVariable Long menuId,
+            @PathVariable Long restaurantId,
+            @PathVariable Long id,
             @RequestBody @Valid MenuUpdateRequest request
     ) {
 
-        log.info("Received request to update menu with id: {}", menuId);
-        MenuResponse updatedMenu = menuService.updateMenu(menuId, request);
+        log.info("Received request to update menu with id: {}", id);
+        MenuResponse updatedMenu = menuService.updateMenu(id, request);
         log.info("Updated menu with id: {}", updatedMenu.id());
         return ResponseEntity.ok(updatedMenu);
     }
 
-    @PatchMapping("/{menuId}/items")
+    @PatchMapping("/{id}/prices")
     public ResponseEntity<Void> updateMenuPrices(
-            @PathVariable Long menuId,
+            @PathVariable Long restaurantId,
+            @PathVariable Long id,
             @RequestParam BigDecimal percentage
             ){
-        log.info("Received request to update menu prices for menuId: {} with percentage: {}", menuId, percentage);
-        menuService.updateAllPricesInMenu(menuId, percentage);
-        log.info("Updated menu prices for menuId: {} with percentage: {}", menuId, percentage);
+        log.info("Received request to update menu prices for menuId: {} with percentage: {}", id, percentage);
+        menuService.updateAllPricesInMenu(id, percentage);
+        log.info("Updated menu prices for menuId: {} with percentage: {}", id, percentage);
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/{menuId}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteMenuById(
-            @PathVariable Long menuId
+            @PathVariable Long id
     ) {
-        log.info("Received request to delete menu with id: {}", menuId);
-        menuService.deleteMenuById(menuId);
-        log.info("Deleted menu with id: {}", menuId);
+        log.info("Received request to delete menu with id: {}", id);
+        menuService.deleteMenuById(id);
+        log.info("Deleted menu with id: {}", id);
         return ResponseEntity.noContent().build();
     }
 

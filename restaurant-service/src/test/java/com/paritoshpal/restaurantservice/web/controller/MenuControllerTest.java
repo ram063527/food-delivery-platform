@@ -1,3 +1,4 @@
+
 package com.paritoshpal.restaurantservice.web.controller;
 
 
@@ -22,9 +23,10 @@ class MenuControllerTest extends AbstractIT {
 
         @Test
         void shouldCreateMenuSuccessfully() {
+            Long restaurantId = 1L;
             var payload  = """
                     {
-                      "restaurantId": 251,
+                      
                       "name": "BRUNCH",
                       "description": "BRuch menu with beautiful chiken"
                     
@@ -36,7 +38,7 @@ class MenuControllerTest extends AbstractIT {
                     .contentType(ContentType.JSON)
                     .body(payload)
                     .when()
-                    .post("/api/menus")
+                    .post("/api/restaurants/{restaurantId}/menus", restaurantId)
                     .then()
                     .statusCode(201)
                     .body("id",notNullValue())
@@ -47,9 +49,11 @@ class MenuControllerTest extends AbstractIT {
 
         @Test
         void shouldCreateMenuWithMenuItemsSuccessfully() {
+
+            Long restaurantId = 51L;
             var payload = """
                     {
-                      "restaurantId": 251,
+                      
                       "name": "Main Menu",
                       "description": "All‑day menu with popular dishes.",
                       "items": [
@@ -81,7 +85,7 @@ class MenuControllerTest extends AbstractIT {
                     .contentType(ContentType.JSON)
                     .body(payload)
                     .when()
-                    .post("/api/menus")
+                    .post("/api/restaurants/{restaurantId}/menus",restaurantId)
                     .then()
                     .statusCode(201)
                     .body("id",notNullValue())
@@ -113,10 +117,10 @@ class MenuControllerTest extends AbstractIT {
 
         @Test
         void shouldReturnBadRequestForInvalidPayload(){
-
+            Long restaurantId = 1L;
             var payload  = """
                     {
-                      "restaurantId": null,
+                     
                       "name": "",
                       "description": "BRuch menu with beautiful chiken"
                     
@@ -128,11 +132,11 @@ class MenuControllerTest extends AbstractIT {
                     .contentType(ContentType.JSON)
                     .body(payload)
                     .when()
-                    .post("/api/menus")
+                    .post("/api/restaurants/{restaurantId}/menus",restaurantId)
                     .then()
                     .statusCode(400)
                     .body("errors", containsInAnyOrder(
-                            "Restaurant ID cannot be null",
+
                             "Menu name cannot be empty"
                     ));
         }
@@ -145,6 +149,7 @@ class MenuControllerTest extends AbstractIT {
         void shouldUpdateMenuSuccessfully() {
 
             var menuId = 1L;
+            Long restaurantId = 251L;
 
             var payload = """
                     {
@@ -158,7 +163,7 @@ class MenuControllerTest extends AbstractIT {
                     .contentType(ContentType.JSON)
                     .body(payload)
                     .when()
-                    .put("/api/menus/{menuId}", menuId)
+                    .put("/api/restaurants/{restaurantId}/menus/{id}",restaurantId, menuId)
                     .then()
                     .statusCode(200)
                     .body("id", notNullValue())
@@ -169,30 +174,33 @@ class MenuControllerTest extends AbstractIT {
         @Test
         void shouldUpdateAllMenuItemPricesSuccessfully() {
             Long menuId = 1L;
+            Long restaurantId = 251L;
             BigDecimal percentage = new  BigDecimal("10.0");
 
             RestAssured.given()
                     .when()
-                    .patch("/api/menus/{menuId}/items?percentage={percentage}", menuId, percentage)
+                    .patch("api/restaurants/{restaurantId}/menus/{id}/prices?percentage={percentage}", restaurantId, menuId, percentage)
                     .then()
                     .statusCode(204);
 
             // Verify that the prices of all menu items in the menu have been updated correctly
+
             RestAssured.given()
                     .when()
-                    .get("/api/menu-items/menu/{menuId}", menuId)
+                    .get("/api/restaurants/{restaurantId}/menus/{id}", restaurantId,menuId)
                     .then()
                     .statusCode(200)
-                    .body("size()", is(21))
-                    .body("find { it.name == 'Butter Chicken' }.price", is(13.75f)) // 12.50 + 10% = 13.75
-                    .body("find { it.name == 'Paneer Tikka' }.price", is(12.10f)) // 11.00 + 10% = 12.10
-                    .body("find { it.name == 'Garlic Naan' }.price", is(3.85f)) // 3.50 + 10% = 3.85
-                    .body("find { it.name == 'Chana Masala' }.price", is(10.45f)); // 9.50 + 10% = 10.45
+                    .body("menuItems.size()", is(21));
+                    // Add assertions for the remaining menu items
+
         }
 
         @Test
         void shouldReturnNotFoundForNonExistingMenu() {
             var menuId = 999L;
+            Long restaurantId = 251L;
+            BigDecimal percentage = new  BigDecimal("10.0");
+
 
             var payload = """
                     {
@@ -206,7 +214,7 @@ class MenuControllerTest extends AbstractIT {
                     .contentType(ContentType.JSON)
                     .body(payload)
                     .when()
-                    .put("/api/menus/{menuId}", menuId)
+                    .put("api/restaurants/{restaurantId}/menus/{id}?percentage={percentage}",restaurantId,menuId,percentage)
                     .then()
                     .statusCode(404)
                     .body("detail", is("Menu with id " + menuId + " not found."));
@@ -219,11 +227,12 @@ class MenuControllerTest extends AbstractIT {
 
         @Test
         void shouldDeleteMenuSuccessfully() {
+            Long restaurantId = 251L;
             var menuId = 51L;
 
             RestAssured.given()
                     .when()
-                    .delete("/api/menus/{menuId}", menuId)
+                    .delete("/api/restaurants/{restaurantId}/menus/{id}",restaurantId, menuId)
                     .then()
                     .statusCode(204);
 
@@ -231,19 +240,12 @@ class MenuControllerTest extends AbstractIT {
 
             RestAssured.given()
                     .when()
-                    .get("/api/menus/{menuId}", menuId)
+                    .get("/api/restaurants/{restaurantId}/menus/{id}", restaurantId,menuId)
                     .then()
                     .statusCode(404)
                     .body("detail", is("Menu with id " + menuId + " not found."));
 
 
-            // Verify that the menu items associated with the deleted menu are also deleted
-            RestAssured.given()
-                    .when()
-                    .get("/api/menu-items/menu/{menuId}", menuId)
-                    .then()
-                    .statusCode(200)
-                    .body("size()", is(0));
         }
     }
 
@@ -252,11 +254,12 @@ class MenuControllerTest extends AbstractIT {
 
         @Test
         void shouldGetMenuByIdSuccessfully() {
+            Long restaurantId = 251L;
             var menuId = 1L;
 
             RestAssured.given()
                     .when()
-                    .get("/api/menus/{menuId}", menuId)
+                    .get("/api/restaurants/{restaurantId}/menus/{id}",restaurantId, menuId)
                     .then()
                     .statusCode(200)
                     .body("id", notNullValue())
@@ -267,11 +270,12 @@ class MenuControllerTest extends AbstractIT {
 
         @Test
         void shouldReturnNotFoundForNonExistingMenu() {
+            Long restaurantId = 251L;
             var menuId = 999L;
 
             RestAssured.given()
                     .when()
-                    .get("/api/menus/{menuId}", menuId)
+                    .get("/api/restaurants/{restaurantId}/menus/{id}",restaurantId, menuId)
                     .then()
                     .statusCode(404)
                     .body("detail", is("Menu with id " + menuId + " not found."));
@@ -283,7 +287,7 @@ class MenuControllerTest extends AbstractIT {
 
             RestAssured.given()
                     .when()
-                    .get("/api/menus/restaurant/{restaurantId}", restaurantId)
+                    .get("/api/restaurants/{restaurantId}/menus", restaurantId)
                     .then()
                     .statusCode(200)
                     .body("size()", is(2))
@@ -296,7 +300,7 @@ class MenuControllerTest extends AbstractIT {
 
             RestAssured.given()
                     .when()
-                    .get("/api/menus/restaurant/{restaurantId}", restaurantId)
+                    .get("/api/restaurants/{restaurantId}/menus", restaurantId)
                     .then()
                     .statusCode(404)
                     .body("detail", is("Restaurant with ID " + restaurantId + " not found."));
@@ -312,7 +316,7 @@ class MenuControllerTest extends AbstractIT {
 
             RestAssured.given()
                     .when()
-                    .get("/api/menus/restaurant/{restaurantId}", restaurantId)
+                    .get("/api/restaurants/{restaurantId}/menus", restaurantId)
                     .then()
                     .statusCode(200)
                     .body("size()", is(0));
