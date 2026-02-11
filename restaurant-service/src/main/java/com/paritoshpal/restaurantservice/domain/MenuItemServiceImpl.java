@@ -144,6 +144,17 @@ public class MenuItemServiceImpl implements  MenuItemService {
 
     }
 
+    @Override
+    public List<MenuItemResponse> getMenuItemsBulk(Long restaurantId, Long menuId, List<Long> ids) {
+        // 1. Validate menu exists for the given restaurant
+        if(!menuRepository.existsByIdAndRestaurantId(menuId, restaurantId)) {
+            throw MenuNotFoundException.forRestaurant(restaurantId, menuId);
+        }
+        // 2. Fetch menu items by menu id and list of ids
+        return menuItemRepository.findAllByMenu_IdAndIdIn(menuId, ids)
+                .stream().map(menuItemMapper::toMenuItemResponse).toList();
+    }
+
     private boolean validateMenuBelongsToRestaurant(Long restaurantId, Long menuId) {
         return menuRepository.existsByIdAndRestaurantId(menuId, restaurantId);
     }

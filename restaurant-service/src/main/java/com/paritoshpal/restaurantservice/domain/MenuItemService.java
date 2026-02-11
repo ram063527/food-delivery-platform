@@ -50,4 +50,10 @@ public interface MenuItemService {
             MenuCategory category);
 
 
+    List<MenuItemResponse> getMenuItemsBulk(
+            Long restaurantId,
+            Long menuId,
+            List<Long> ids
+    );
+
 }

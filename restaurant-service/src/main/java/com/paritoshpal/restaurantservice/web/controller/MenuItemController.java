@@ -64,6 +64,18 @@ public class MenuItemController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/bulk")
+    public ResponseEntity<List<MenuItemResponse>> getMenuItemsBulk(
+            @PathVariable Long restaurantId,
+            @PathVariable Long menuId,
+            @RequestBody List<Long> ids
+    ){
+        log.info("Received request to get menu items in bulk for menuId: {} and ids: {}", menuId, ids);
+        List<MenuItemResponse> items = menuItemService.getMenuItemsBulk(restaurantId,menuId, ids);
+        return ResponseEntity.ok(items);
+    }
+
+
     @PutMapping("/{id}")
     public ResponseEntity<MenuItemResponse> updateMenuItem(
             @PathVariable Long restaurantId,

@@ -394,6 +394,30 @@ class MenuItemControllerTest extends AbstractIT {
         }
 
 
+        @Test
+        void shouldGetMenuItemsInBulkSuccessfully() {
+            Long restaurantId = 1L; // Spice Hub
+            Long menuId = 1L; // Main Menu
+
+            var payload = """
+                    [1, 51, 101]
+                    """;
+
+            RestAssured.given()
+                    .contentType(ContentType.JSON)
+                    .body(payload)
+                    .when()
+                    .get("/api/restaurants/{restaurantId}/menus/{menuId}/items/bulk", restaurantId, menuId)
+                    .then()
+                    .statusCode(200)
+                    .body("$", hasSize(3))
+                    .body("[0].id", equalTo(1))
+                    .body("[1].id", equalTo(51))
+                    .body("[2].id", equalTo(101));
+        }
+
+
+
     }
 
 
