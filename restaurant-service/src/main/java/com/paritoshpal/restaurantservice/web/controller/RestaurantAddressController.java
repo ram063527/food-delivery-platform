@@ -13,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/restaurant/{restaurantId}/address")
+@RequestMapping("/api/restaurants/{restaurantId}/address")
 @RequiredArgsConstructor
 public class RestaurantAddressController {
 

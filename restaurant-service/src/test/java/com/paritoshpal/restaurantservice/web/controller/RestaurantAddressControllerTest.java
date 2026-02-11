@@ -38,7 +38,7 @@ class RestaurantAddressControllerTest extends AbstractIT {
                     .contentType(ContentType.JSON)
                     .body(payload)
                     .when()
-                    .post("/api/restaurant/{restaurantId}/address", restaurantId)
+                    .post("/api/restaurants/{restaurantId}/address", restaurantId)
                     .then()
                     .statusCode(201)
                     .body("id", notNullValue())
@@ -71,7 +71,7 @@ class RestaurantAddressControllerTest extends AbstractIT {
                     .contentType(ContentType.JSON)
                     .body(payload)
                     .when()
-                    .post("/api/restaurant/{restaurantId}/address", restaurantId)
+                    .post("/api/restaurants/{restaurantId}/address", restaurantId)
                     .then()
                     .statusCode(409)
                     .body("detail", is("Restaurant with id "+restaurantId  +" already has an address."));
@@ -98,7 +98,7 @@ class RestaurantAddressControllerTest extends AbstractIT {
                     .contentType(ContentType.JSON)
                     .body(payload)
                     .when()
-                    .post("/api/restaurant/{restaurantId}/address", restaurantId)
+                    .post("/api/restaurants/{restaurantId}/address", restaurantId)
                     .then()
                     .statusCode(400)
                     .body("errors", containsInAnyOrder(
@@ -136,7 +136,7 @@ class RestaurantAddressControllerTest extends AbstractIT {
                     .contentType(ContentType.JSON)
                     .body(payload)
                     .when()
-                    .put("/api/restaurant/{restaurantId}/address", restaurantId)
+                    .put("/api/restaurants/{restaurantId}/address", restaurantId)
                     .then()
                     .statusCode(200)
                     .body("id", notNullValue())
@@ -169,7 +169,7 @@ class RestaurantAddressControllerTest extends AbstractIT {
                     .contentType(ContentType.JSON)
                     .body(payload)
                     .when()
-                    .put("/api/restaurant/{restaurantId}/address", nonExistantRestaurantId)
+                    .put("/api/restaurants/{restaurantId}/address", nonExistantRestaurantId)
                     .then()
                     .statusCode(404);
         }
@@ -185,13 +185,13 @@ class RestaurantAddressControllerTest extends AbstractIT {
             Long restaurantId = 51L;
             RestAssured.given()
                     .when()
-                    .delete("/api/restaurant/{restaurantId}/address", restaurantId)
+                    .delete("/api/restaurants/{restaurantId}/address", restaurantId)
                     .then()
                     .statusCode(204);
             // Verify that the address is actually deleted
             RestAssured.given()
                     .when()
-                    .get("/api/restaurants-addresses/restaurant/{restaurantId}", restaurantId)
+                    .get("/api/restaurants/{restaurantId}/address", restaurantId)
                     .then()
                     .statusCode(404);
         }
@@ -207,7 +207,7 @@ class RestaurantAddressControllerTest extends AbstractIT {
 
             RestAssured.given()
                     .when()
-                    .get("/api/restaurant/{restaurantId}/address", restaurantId)
+                    .get("/api/restaurants/{restaurantId}/address", restaurantId)
                     .then()
                     .statusCode(200)
                     .body("id", notNullValue())
@@ -220,7 +220,7 @@ class RestaurantAddressControllerTest extends AbstractIT {
 
             RestAssured.given()
                     .when()
-                    .get("/api/restaurant/{restaurantId}/address", nonExistingRestaurantId)
+                    .get("/api/restaurants/{restaurantId}/address", nonExistingRestaurantId)
                     .then()
                     .statusCode(404);
         }
