@@ -407,7 +407,7 @@ class MenuItemControllerTest extends AbstractIT {
                     .contentType(ContentType.JSON)
                     .body(payload)
                     .when()
-                    .get("/api/restaurants/{restaurantId}/menus/{menuId}/items/bulk", restaurantId, menuId)
+                    .post("/api/restaurants/{restaurantId}/menus/{menuId}/items/bulk", restaurantId, menuId)
                     .then()
                     .statusCode(200)
                     .body("$", hasSize(3))

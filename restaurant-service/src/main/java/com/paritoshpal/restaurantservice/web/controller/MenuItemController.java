@@ -64,7 +64,7 @@ public class MenuItemController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/bulk")
+    @PostMapping("/bulk")
     public ResponseEntity<List<MenuItemResponse>> getMenuItemsBulk(
             @PathVariable Long restaurantId,
             @PathVariable Long menuId,
